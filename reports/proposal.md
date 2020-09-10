@@ -26,7 +26,11 @@ We like to build a set of tool that may automate such process for a certain degr
 
 The concept of quantum trading wasn't widespread until approximately four years ago. In the early days, developers not only design their own trading models, but also have to collect historical trading data, do the data formatting and regularization, and write testing platforms all by themselves, which used to be a tremendous amount of work. Since then, an increasing amount of people have started working on quantum trading, and a lot of related tools and data sources have emerged. Here we list a few major platforms that are either data sources or backtesting toolkits. We would analysis them on their functionalities, ease of use, and the aspects that they miss and that our platform would provide.
 
-### Data Providers
+
+Backtesting is never a new idea and so does using NLP. There are countless stock market data provider, stock market backtester, and people have published various version of code to obtain nature language data (e.g. scraping a website).
+
+
+### Stock Market Data Providers
 
 #### Seeking Alpha
 
@@ -40,9 +44,12 @@ Finnhub.io is a newly born data service that aims to provide trading data specia
 
 ### Backtesting Platform
 
+Base on our research, backtesting is a rather mature area with some very complete products available. This type of published backtesting library often has very robust system design and integrated sophisticated visualization features. It is our understanding that there is no reason to "reinvent the wheel" and build another stock market backtester, so we will likely wrap some existing backtesting library and pipeline it with other modules of the project.
+
+
 #### Python-Backtesting
 
-Python has included a backtesting library, Backtesting.py, in its official repository since approximately two years ago. The package was still in beta testing, and is at version 0.2.2 as of the time writing this proposal. Backtesting.py offers a simple yet powerful trading simulator, which accepts data and a user-written trading bot, and produces the trading result. The platform provides efficient computing modules and a list of professional statistics in its result.
+Python has included a backtesting library, [`Backtesting.py`](https://pypi.org/project/Backtesting/), in its official repository since approximately two years ago. The package was still in beta testing, and is at version 0.2.2 as of the time writing this proposal. Backtesting.py offers a simple yet powerful trading simulator, which accepts data and a user-written trading bot, and produces the trading result. The platform provides efficient computing modules and a list of professional statistics in its result.
 
 However, the downside of this module is that it offers no data manipulation and management tools. The module only accepts only simplest datasets that contains a list of time and prices, which is very insufficient for simulating real world situations.
 
