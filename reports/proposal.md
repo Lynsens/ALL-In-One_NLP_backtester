@@ -48,6 +48,18 @@ However, the downside of this module is that it offers no data manipulation and 
 
 Our integrated solution, in this respect, is planned to provide built-in data manipulation tools. This includes not only the methods that extracts data from data sources, slicing and storing the data, but also supports for varies datasets features. For example, we would support scalable timeframe from minutes to years and discontinuity in the timeline. We would also support events like date changing, splitting, merging, etc. Those events could be optionally adopted by the models, so that the complexity of the models is also scalable.
 
+
+### Plain Text Data Provider
+
+For scraper, taking scraping WSJ as an example, most scrapers like [`wsj_scraper`](https://github.com/daomingyin/wsj_scraper) have the correct idea, but cannot be used due to:
+
+1. Lack of maintenance, so they are not usable upon the updated structure of the news distributor.
+2. Lack of robustness, as many of them are written in a "one-off" fashion with little to no system design thinking implemented.
+3. Lack of metadata scraping on the fly. As many of then only store the "plain text new articles" and that's it. However, metadata of the an article, like its mentioned company, its date, its category... are often extremely valueable.
+
+We will mostly working on regulating the role of a scraper and how will it communicate with other modules of the project, so that a community — if we will ever have one — will be able to contribute upon the design and keeping everything up-to-date. We will also provide a scraper on WSJ for demo.
+
+
 ## Work to be Done
 
 This project, due to its "all-in-one" nature, requires development on a lot of area. The five main modules I can think of are:
