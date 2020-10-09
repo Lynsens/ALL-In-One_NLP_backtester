@@ -54,7 +54,9 @@ Delta Petroleum
 Tesoro
 ```
 
-But which ticker name, exchange center, and legal full name (sometime the mentioned company name is entirely different to its registered name on stock markets) does `Delta Petroleum` associate to? WSJ provided a hyperlink but it is always out-of-date (like this time it links to https://www.wsj.com/market-data/quotes/DPTR, which is a page that is no longer available). We did some heavy engineering (in short, we scraped google results and get back to the new WSJ market data page of such company and obtain such information from it, in this case it will be: https://www.wsj.com/market-data/quotes/DLTA/company-people) on this and able to obtain most companies market information accurately. The result will be something like:
+But which ticker name, exchange center, and legal full name does `Delta Petroleum` associate to? Sometime the mentioned company name is entirely different to its registered name on stock markets, e.g. *Coach* the apparel company's is registered as *Tapestry Inc*. with a ticker of `TPR` under *NYSE* exchange.
+
+WSJ provided a hyperlink but it is always out-of-date (like this time it links to https://www.wsj.com/market-data/quotes/DPTR, which is a page that is no longer available). We did some heavy engineering (in short, we scraped google results with some restriction syntax to get back to the new WSJ market data page of such company and obtain such information from it. In this case it will be: https://www.wsj.com/market-data/quotes/DLTA/company-people) on this and able to obtain most companies market information accurately. The result will be something like:
 
 ```
 [
@@ -86,17 +88,15 @@ But which ticker name, exchange center, and legal full name (sometime the mentio
 (Note the above demo is up-to-change during the course of developing.)
 
 
-One other key metadata is about the article itself: the title, the author, the exact publishing time, which session does it belong to (extremely critical when it comes to politics, e.g. a new report v. a column piece). We will able to register such metadata on the fly when scraping the plain-text information of the article.
+One other key metadata is regarding the article itself: the title, the author, the exact publishing time, which session does it belong to (extremely critical when it comes to politics, e.g. a new report v. a column piece). We will able to register such metadata on the fly when scraping the plain-text information of the article.
 
-Note a lot of these work were done perviously by one of our group member (Henry) under the help of another group member (Mocun). However most of the scripts were written in an one-off fashion, thus very "hacky" and lacks of usability. So we had and are putting heavy effort to refactor these script and hoping to have something like:
+Note a lot of these work were done perviously by one of our group member (Henry) under the help of another group member (Mocun). However most of the scripts were written in an one-off fashion, thus very "hacky" and lack of usability. So we had, are, and will be putting heavy effort to refactor these scripts and hoping to have something like:
 
 ```
-obj.get_plain_text_data (<start_time>, <end_time>, publisher = 'WSJ', credential dict, restriction_dict = None, metadata_dict = None, output_path = <default_dir>).
+obj.get_plain_text_data (<start_time>, <end_time>, publisher = 'WSJ', credential dict = publisher_token['WSJ'], restriction_dict = None, metadata_dict = None, output_path = <default_dir>).
 ```
 
-We except to finish the refactoring / adding new features to this segment for around one or two weeks.
-
-
+We except to finish the refactoring / adding new features to this segment for around one or two weeks. Modularity, usability, and a layer to support other publishers is our main focus.
 
 
 
