@@ -108,10 +108,16 @@ We except to finish the refactoring / adding new features to this segment for ar
 ### Regarding Visualization
 
 
+
 ---
 
 ## Future Plan
 
+Our general goal remain largely unchanged from the first proposal. So we will still (at least) provide a plain text data provider, a stock market trader (obtaining stock market data + backtesting), and a visualizer. We will reasonably scale down or up on our implementation regarding the features on model-friendly data manipulation, complexity of visualization, and technical advancement of the demo model (for now, it is mostly likely going to be "dummy" model for the pure purpose of demonstrating the capability of the project).
+
+Other then the above mentioned segments — which are mostly tasks related to coding — we understand the maturity of a tool is heavily depended on its documentation and manual. Thus, we will allocate time to provide [an user manual like this](https://github.com/choH/half_tael_DQN/blob/master/demo_and_manual/User%20Manual%20for%20trade_interface.py.md) (which one of our group member have previously done for another project) to facility our potential users.
+
+Please refer to the *Updated Management Plan* section for a more detailed timeline for future plan.
 
 ---
 
