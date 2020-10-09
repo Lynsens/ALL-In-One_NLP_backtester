@@ -117,7 +117,7 @@ Our general goal remain largely unchanged from the first proposal. So we will st
 
 Other then the above mentioned segments — which are mostly tasks related to coding — we understand the maturity of a tool is heavily depended on its documentation and manual. Thus, we will allocate time to provide [an user manual like this](https://github.com/choH/half_tael_DQN/blob/master/demo_and_manual/User%20Manual%20for%20trade_interface.py.md) (which one of our group member have previously done for another project) to facility our potential users.
 
-Please refer to the *Updated Management Plan* section for a more detailed timeline for future plan.
+Please refer to the **Updated Management Plan** section for a more detailed timeline for future plan.
 
 ---
 
