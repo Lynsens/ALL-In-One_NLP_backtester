@@ -171,3 +171,27 @@ Please refer to the *Updated Management Plan* section for a more detailed timeli
 ## Contribution Acknowledgment
 
 
+
+* **Henry ZHONG**
+    * Developed WSJ scraper script with the help of Mocun. `code`
+    * Refactoring WSJ scraper script with Mocun. `code`
+    * Designing wrapper layer on the plain text data provider module with Jiaqi. `design`
+    * Drafted **Regarding Text Input** section of *Progress Report 1*. `report`
+    * Wrote **Background** section of *Progress Report 1* with contribution of Jiaqi. `report`
+    * Wrote **Future Plan** and **Updated Management Plan** sections of *Progress Report 1*, however the it is just a reflection of our team discussion.  `report` `management`
+
+* **Jiaqi YU**
+    * Designing wrapper layer on the plain text data provider module with Henry. `design`
+    * Researched the implementations of necessary components of stock market trading. `design`
+    * Educating other group members the basic of stock market trading to help design the interface between different modules. `design`
+    * Drafted **Regarding Trading** section of *Progress Report 1*. `report`
+    * Wrote **Background** section of *Progress Report 1* with contribution of Henry. `report`
+    * Contributed to **Future Plan** and **Updated Management Plan** sections of *Progress Report 1*. `report` `management`
+
+
+* **Mocun YE**
+    * Experimenting basic of of data visualizer. `code`
+    * Researched the design of data visualizer with respect to back testing platform. `design`
+    * Researched the design of visualizer with respect to model feature representation. `design`
+    * Drafted **Regarding Visualization** section of *Progress Report 1*. `report`
+    * Contributed to **Future Plan** and **Updated Management Plan** sections of *Progress Report 1*. `report` `management`
