@@ -107,7 +107,18 @@ We except to finish the refactoring / adding new features to this segment for ar
 
 ### Regarding Visualization
 
+We haven't done done much actual development on visualizer as anticipated in our proposed plan. This is because the a visualizer is only developable knowing what attributes are needed to be visualized, and in what format will the visualizer module achieve such attributes (in our case, the `trade_log`).
 
+We (mostly Mocun) did, however, inspected and duplicated some visualization results demoed by some popular backtesting library. e.g. the [`backtesting.py`](https://kernc.github.io/backtesting.py/).
+
+
+![backtestingpy_demo](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/backtestingpy_demo.png)
+
+For a honest evaluation, with the ability of duplicating this kind of visualization, for the "overlapped" attributes between our need and the support of this visualizer, we will likely not "reinvent the wheel" due to the fact this design is good enough if not any better. We will find a way to incorporate (or separately provide) our visualization on some NLP-only data, e.g. `word-freq`.
+
+We have also experimented the idea of exporting a `TensorBoard`-like file which is interactable in browsers, as one of our team member Mocun have some related experience on this in his pervious project.
+
+Also as encountered in a pervious RL project which Henry have contributed, we also looked into the possibility of visualizing model's "thought" in a sense of tracking some key attributes of the model (like [this](https://medium.com/@awjuliani/simple-reinforcement-learning-with-tensorflow-part-5-visualizing-an-agents-thoughts-and-actions-4f27b134bb2a)). We have tried some "playground code" on this with some dummy input, the coding is not too hard but it is hard to have different attributes tacked altogether while making them visually "synced" with a time series axis. We will reevaluate if we'd like to implement this feature after the trade log of Jiaqi is entirely designed and fixed.
 
 ---
 
