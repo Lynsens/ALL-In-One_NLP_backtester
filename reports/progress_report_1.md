@@ -123,6 +123,49 @@ Please refer to the *Updated Management Plan* section for a more detailed timeli
 
 ## Updated Management Plan
 
+* Week of 10/05/2020:
+    * Report 1 writing.
+    * Management plan planning.
+    * (Reduced workload due to midterm preparation and Report 1 writing)
+
+* Week of 10/12/2020:
+    * Refactor scraper.
+    * Virtual trading platform development / Regulate trade log format.
+    * Design visualizer.
+    * (Reduced workload due to midterm preparation)
+
+* Week of 10/19/2020:
+    * Finish plain text data provider development.
+    * Visualizer development with respect to trade log.
+    * Data organizer design.
+
+* Week of 10/26/2020:
+    * Test and debug coupling between virtual trading platform and plain text data provider.
+    * Visualizer development with respect to trade log.
+    * Data organizer development with respect to achievement of  virtual trading platform.
+
+* Week of 11/02/2020:
+    * Visualizer development (if needed).
+    * Test and debug coupling everything.
+    * Report 2 writing.
+    * (Reduced workload due to Report 2 writing)
+
+* Week of 11/09/2020:
+    * Dummy demo model development.
+    * Test and debug coupling everything.
+    * Paper writing.
+
+* Week of 11/16/2020:
+    * Documentation and manual writing.
+    * Redundancy.
+    * Paper writing.
+    * Post making (if needed).
+    * (Reduced workload due to Paper writing)
+
+* Week of 11/23/2020:
+    * Redundancy.
+    * Final report writing.
+    * Polishing our delivery.
 
 ---
 ## Contribution Acknowledgment
