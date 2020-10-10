@@ -12,7 +12,7 @@
 
 ## Background
 
-The background of the project remains largely unchanged from out perviously submitted proposal. So here we will provide a concentrated version of it.
+The background of the project remains largely unchanged from our perviously submitted proposal. So here we will provide a concentrated version of it.
 
 Using NLP related approaches to do some kinds of prediction on stock market is nothing new among traders who want to develop profitable trading strategies, researchers who want to testify their models' performances, and also to every developer who wants to have some hand-on ML/DL experience.
 
@@ -41,7 +41,7 @@ As mentioned in the background session, one of the main focuses of our project i
 
 As a proposed option and now and per TA's feedback, we decided to limited our provided "exemplary" plain text data API to be [The Wall Street Journal](https://www.wsj.com) as one of our group member (Henry) has perviously worked on it.
 
-What we have in hand now it a set of scripts which capable of scraping almost all (there are couple of exceptions, i.e. [this comic](https://www.wsj.com/articles/SB10001424052970204394804577010393609610160) has no plain text information and our script will simply skip it) WSJ articles during a certain timeframe, and register mentioned companies market information accordingly. As a visual aid of the former achievement, the scripts we have are able to extract the below information from WSJ:
+What we have in hand now is a set of scripts which capable of scraping almost all (there are couple of exceptions, i.e. [this comic](https://www.wsj.com/articles/SB10001424052970204394804577010393609610160) has no plain text information and our script will simply skip it) WSJ articles during a certain timeframe, and register mentioned companies market information accordingly. As a visual aid of the former achievement, the scripts we have are able to extract the below information from WSJ:
 
 ![scraped_wsj_articles](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/scraped_wsj_articles.png)
 
@@ -102,10 +102,57 @@ We except to finish the refactoring / adding new features to this segment for ar
 
 ### Regarding Trading
 
+As stated in the proposal, we are trying to design an integrated solution that has built-in tools for data manipulation while also works as a backtesting platform. Upon further study in the stock trading, we now have a more detailed design of the trading mechanism of our solution. The design of our system is built on two principles, the simplicity and the scalability.
 
- > **Jiaqi please add your parts here.**
+In terms of the simplicity, we want our system to provide as simple and integrated interface as possible to the user. In our study of the existing backtesting platforms, we found most of them have complex and inefficient interfaces. Python-Backtesting, as an example, lacks a well-defined interface for the users to program their model. To obtain the moving averages or the relative strength index for a time period, the user would have to write their own averaging and computing methods, let the model keep the stock price info on each trading event, and do the computation at some point within the model. Also, the name of the method to obtain the trading data various and looks unpredictable. These are what we are trying to avoid in our trading model.
 
+As for the scalability, we want our platform to also be able to accommodate models of a wide range of complexity, that is, models working on different time frame, adopting different range of trading event and information, and obtaining data either by batch or per time frame. Again, Python-Backtesting as the example, does not provide flexible time frame and the model would thus have to resample the data by itself. Also, most of the existing backtesting platforms only offer the most simple stock price data to the model, either discards or pre-processes the other stock events, such as splitting, merging, suspension, etc. We expect our platform to provide all the possible information in the original stock data to the model, while making most of them optionally adopted by the model. In this way, the user could focus only on what information their model need, and fetch them in the easiest way.
 
+With these design objectives in mind, we so far propose a backtesting interface as follows. These designs may subject to changes as we actually implement them, but we do not expect the final product to be any more complex than the design we have now.
+
+The usage of our backtesting platform is divided into three phases, the configuration phase, the data pre-fetching phase, and the iteration phase.
+
+In the configuration phase, the user would initialize an instance of the backtesting platform, let it load the data, and do the configurations if necessary. The first two steps would be as simple as initialize a class with a path to the data folder. As for the third step, we define a series of functions and variables in the class to be configured:
+
+| Function/Variable | Parameters/Value | Description | 
+|--------|------|-------|
+|`.time_resolution`| integer, in minutes | The time interval that the trading data is aggregated and provided to the model. |
+|`.time_start`| integer, UNIX timestamp | The time that the trading emulation iteration starts. |
+|`.time_end`| integer, UNIX timestamp | The time that the trading emulation iteration ends. |
+|`.set_features`| *list_of_features: enumerators | Set the list of features that need to be provided to the model. This determines which features would be included when the platform calls the callback function of the model. See the third phase below for more about the feature. |
+|`.set_init_callback()`| callable | Provides a function to be called by the platform when it starts to iterate through the data and emulate the transaction. This function is optional. |
+|`.set_iterate_callback()`| callable, should accept a dictionary | Provides a function that the platform calls on each iteration so as to provide data to the model. See the third phase below for more on this function. |
+
+The second phase for the model to load the data, is actually optional. This is designed for the models that need to be trained, or would be more efficient if first trained, with batches of data first before it could be run online. We provides the following data fetching function:
+
+| Function | Parameters | Description | 
+|--------|------|-------|
+|`.prefetch_data()`| start_time: integer, end_time: integer, *list_of_features: enumerators | Returns the data within the selected time interval with selected features.</br>In real world applications, one don't have to call this function only once, fetch all the data into a table, and slice them by itself. Instead, it is suggested to call this function multiple times and feed the required data directly into the algorithms.</br>For the list of features, see below.|
+
+Finally, in the last phase, the model should have been completely initialized and ready to be emulated on the backtesting platform. The model should then provide callback function to the platform so that the platform could run the model on each iteration of the emulation. We also provide a simple interface for the model to do the tradings, but it is suggested for the model to keep the trading information within itself.
+
+| Function | Parameters | Description | 
+|--------|------|-------|
+|`.run()`| None | Starts the emulation. The emulation would be done from the `.time_start` to `.time_end`, with an interval of `.time_resolution`. |
+|`.trade()`| stock: string, amount: integer | Do the trading on the selected stock with the desired amount. The amount could be both positive and negative for buying or selling. |
+
+To provide the data back to the model, we call the callback function with a dictionary, of which the keys are predefined in the platform, and can be selected with the functions mentioned above. In this way, a model could choose which information it needs, and would then get a simple and comprehensive list of those information on each iteration. Also, with the uniformly defined names of these features, the model developer would find it easier to work with these data features.
+
+As for the list of the features, since we are still studying the stock market, we have not finalize it yet. Below is an incomprehensive list of the features that we would likely to provide.
+
+| Name | Type | Description | 
+|--------|------|-------|
+|`name`| string | The name of the stock. This feature is always provided. |
+|`timestamp`| integer | The timestamp (or starting timestamp for a wider time frame) that this data happens. |
+|`Quote`| float | The price (or, in most cases, the averaged price), within the time frame. |
+|`Quote_last`| float | The price at the last minimal available time unit within the time frame. This is provided for more accurate trading behavior. |
+|`Bidding_buy`| list | The descending sorted list of the latest buying bids within the time frame. |
+|`Bidding_sell`| list | The ascending sorted list of the latest selling bids withing the time frame. |
+|`Time_skip`| integer | When a time skip occurs, provides how many time units have been skipped in the data. This usually happens when date changes, or when suspension occurs. |
+|`Suspension`| boolean | Indicates that a suspension has occurred during the time frame. The flag would be kept True until it reaches a time frame within which the suspension is cancelled. |
+|`Split`| float | Be none-zero when a split occurs in such stock, indicate how many shares one share is splited into. |
+|`Merge`| float | Be none-zero when a merge occurs in such stock, indicate how many shares would be merged into one share. |
+|`Ownership_Change`| list of dictionaries | Indicates the changes of the ownership of some stock by some other companies (owners). The information is provided in a list of dictionaries, which includes the names, current share, and changed share of that company (owner). |
 
 ### Regarding Visualization
 
