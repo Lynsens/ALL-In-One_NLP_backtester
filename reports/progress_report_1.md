@@ -138,7 +138,7 @@ Finally, in the last phase, the model should have been completely initialized an
 
 To provide the data back to the model, we call the callback function with a dictionary, of which the keys are predefined in the platform, and can be selected with the functions mentioned above. In this way, a model could choose which information it needs, and would then get a simple and comprehensive list of those information on each iteration. Also, with the uniformly defined names of these features, the model developer would find it easier to work with these data features.
 
-As for the list of the features, since we are still studying the stock market, we have not finalize it yet. Below is an incomprehensive list of the features that we would likely to provide.
+As for the list of the features, since we are still studying the stock market, we have not finalized it yet. Below is an incomprehensive list of the features that we would likely to provide.
 
 | Name | Type | Description | 
 |--------|------|-------|
