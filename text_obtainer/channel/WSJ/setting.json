@@ -1,0 +1,13 @@
+{
+    "token": {
+        "account": "",
+        "password": ""
+    },
+    "duration": {
+        "start_time": "20080101",
+        "end_time": "20080103"
+    },
+    "dir": {
+        "output_prefix": "WSJ"
+    }
+}
