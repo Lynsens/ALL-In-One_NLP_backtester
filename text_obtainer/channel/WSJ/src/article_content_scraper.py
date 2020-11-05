@@ -40,35 +40,37 @@ def get_articles(driver, output_dir):
             os.makedirs(article_storage_dir)
 
         with open(url_storage_dir_prefix + an_url_file) as url_f:
-            url_counter = 0
-            for an_article_url_suffix in url_f:
-                an_article_url = article_url_prefix + an_article_url_suffix
-                driver.get(an_article_url)
-                soup = BeautifulSoup(driver.page_source, 'lxml')
+            article_url_list = [i for i in url_f]
 
-                quote_tags = soup.find_all('a', href=True)
-                quote_list = []
-                for i in quote_tags:
-                    url = i['href']
-                    text = i.text
-                    if 'market-data/quotes/' in url and len(url.split('/')) == 6:
-                        quote_list.append(text)
 
-                content_tag = soup.find("div", {"class":"article-content"})
-                try:
-                    content = content_tag.get_text().strip()
-                except AttributeError as e:
-                    error_log = f"{a_date}'s {an_article_url} failed during content retrieval due to {e}."
-                    logger.register_log(error_log, logger_dir, log_filename)
-                    continue
+        url_counter = 0
+        for an_article_url_suffix in article_url_list:
+            an_article_url = article_url_prefix + an_article_url_suffix
+            driver.get(an_article_url)
+            soup = BeautifulSoup(driver.page_source, 'lxml')
 
-                with open(article_storage_dir + an_article_url_suffix + '-quotes.txt', 'w+') as quote_f:
-                    quote_f.write('\n'.join(quote_list))
+            quote_tags = soup.find_all('a', href=True)
+            quote_list = []
+            for i in quote_tags:
+                url = i['href']
+                text = i.text
+                if 'market-data/quotes/' in url and len(url.split('/')) == 6:
+                    quote_list.append(text)
 
-                with open(article_storage_dir + an_article_url_suffix + '.txt', 'w+') as content_f:
-                    content_f.write(content)
+            content_tag = soup.find("div", {"class":"article-content"})
+            try:
+                content = content_tag.get_text().strip()
+            except AttributeError as e:
+                error_log = f"{a_date}'s {an_article_url} failed during content retrieval due to {e}."
+                logger.register_log(error_log, logger_dir, log_filename)
+                continue
 
-                output_log = f"{a_date}'s {an_article_url_suffix} done (quotes: {len(quote_list)}; content: {len(content)}) | #{url_counter}"
-                logger.register_log(output_log, logger_dir, log_filename)
-                url_counter += 1
- No newline at end of file
+            with open(article_storage_dir + an_article_url_suffix + '-quotes.txt', 'w+') as quote_f:
+                quote_f.write('\n'.join(quote_list))
+
+            with open(article_storage_dir + an_article_url_suffix + '.txt', 'w+') as content_f:
+                content_f.write(content)
+
+            url_counter += 1
+            output_log = f"{a_date}'s {an_article_url_suffix} done (quotes: {len(quote_list)}; content: {len(content)}) | #{url_counter}/{len(article_url_list)}"
+            logger.register_log(output_log, logger_dir, log_filename)
