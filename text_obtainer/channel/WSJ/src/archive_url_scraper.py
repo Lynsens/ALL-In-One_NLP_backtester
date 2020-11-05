@@ -1,4 +1,3 @@
-import os
 import requests
 import time, re
 import json
@@ -8,6 +7,17 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import Chrome
 from datetime import datetime,timedelta
 import itertools, collections
+
+
+import os, sys, inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+publisher_dir = os.path.dirname(current_dir)
+channel_dir = os.path.dirname(publisher_dir)
+text_obtainer_dir = os.path.dirname(channel_dir)
+sys.path.insert(0, text_obtainer_dir)
+import logger
+
+
 
 
 
@@ -27,6 +37,8 @@ def login(driver, token):
 
 def get_article_urls(driver, duration, output_dir):
     article_urls_storage_dir = output_dir + 'article_urls/'
+    logger_dir = output_dir + 'logs/'
+    log_filename = 'article_urls_log.txt'
     if not os.path.exists(article_urls_storage_dir):
         os.makedirs(article_urls_storage_dir)
 
@@ -49,25 +61,22 @@ def get_article_urls(driver, duration, output_dir):
         try:
             daily_article_url_list = scrape_headline_urls(driver, an_archive_url)
         except AttributeError as e:
-            log_msg = f'{a_date.strftime("%Y%m%d")} not logged due to {e}.'
-            # register_url_log(log_msg)
-            print(log_msg)
+            log_msg = f'{a_date.strftime("%Y%m%d")} not retrieved due to {e}.'
+            logger.register_log(log_msg, logger_dir, log_filename)
             continue
         while (len(daily_article_url_list) == 0):
             try:
                 daily_article_url_list = scrape_headline_urls(driver, an_archive_url)
             except AttributeError as e:
-                log_msg = f'{a_date.strftime("%Y%m%d")} not logged due to {e}.'
-                # register_url_log(log_msg)
-                print(log_msg)
+                log_msg = f'{a_date.strftime("%Y%m%d")} not retrieved due to {e}.'
+                logger.register_log(log_msg, logger_dir, log_filename)
                 break
 
         with open(article_urls_storage_dir + a_date.strftime("%Y%m%d") + '.txt', 'w+') as f:
             f.write('\n'.join(daily_article_url_list))
 
-    url_log_msg = f'{a_date.strftime("%Y%m%d")} done, {len(daily_article_url_list)} articles logged.'
-    # register_url_log(url_log_msg)
-    print(url_log_msg)
+        log_msg = f'{a_date.strftime("%Y%m%d")} done, urls to {len(daily_article_url_list)} articles retrieved.'
+        logger.register_log(log_msg, logger_dir, log_filename)
 
 
 
