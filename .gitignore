@@ -1,6 +1,7 @@
 # Project Specific
 
 # Ignored folders
+**/articles/**
 **/article_urls/**
 **/logs/**
 logs/*
