@@ -71,3 +71,4 @@ def get_articles(driver, output_dir):
                 output_log = f"{a_date}'s {an_article_url_suffix} done (quotes: {len(quote_list)}; content: {len(content)}) | #{url_counter}"
                 logger.register_log(output_log, logger_dir, log_filename)
                 url_counter += 1
+ No newline at end of file
