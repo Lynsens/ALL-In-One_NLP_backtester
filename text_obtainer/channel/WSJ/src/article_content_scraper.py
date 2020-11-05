@@ -49,13 +49,15 @@ def get_articles(driver, output_dir):
             driver.get(an_article_url)
             soup = BeautifulSoup(driver.page_source, 'lxml')
 
+            json_output = {'channel': 'WSJ', 'date': a_date, 'url': an_article_url}
+
             quote_tags = soup.find_all('a', href=True)
             quote_list = []
             for i in quote_tags:
                 url = i['href']
                 text = i.text
                 if 'market-data/quotes/' in url and len(url.split('/')) == 6:
-                    quote_list.append(text)
+                    quote_list.append((text, url))
 
             content_tag = soup.find("div", {"class":"article-content"})
             try:
@@ -65,11 +67,16 @@ def get_articles(driver, output_dir):
                 logger.register_log(error_log, logger_dir, log_filename)
                 continue
 
-            with open(article_storage_dir + an_article_url_suffix + '-quotes.txt', 'w+') as quote_f:
-                quote_f.write('\n'.join(quote_list))
 
-            with open(article_storage_dir + an_article_url_suffix + '.txt', 'w+') as content_f:
-                content_f.write(content)
+
+            json_output['quotes'] = quote_list
+            json_output['content'] = content
+
+            # with open(article_storage_dir + an_article_url_suffix + '-quotes.txt', 'w+') as quote_f:
+            #     quote_f.write('\n'.join(quote_list))
+            with open(article_storage_dir + an_article_url_suffix + '.json', 'w+') as output_f:
+                # content_f.write(content)
+                json.dump(json_output, output_f, indent = 4)
 
             url_counter += 1
             output_log = f"{a_date}'s {an_article_url_suffix} done (quotes: {len(quote_list)}; content: {len(content)}) | #{url_counter}/{len(article_url_list)}"
