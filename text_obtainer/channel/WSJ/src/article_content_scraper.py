@@ -45,6 +45,7 @@ def get_articles(driver, output_dir):
 
         url_counter = 0
         for an_article_url_suffix in article_url_list:
+            an_article_url_suffix = an_article_url_suffix.strip()
             an_article_url = article_url_prefix + an_article_url_suffix
             driver.get(an_article_url)
             soup = BeautifulSoup(driver.page_source, 'lxml')
