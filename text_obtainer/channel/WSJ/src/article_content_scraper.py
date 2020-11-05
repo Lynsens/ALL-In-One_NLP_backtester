@@ -60,18 +60,32 @@ def get_articles(driver, output_dir):
                 if 'market-data/quotes/' in url and len(url.split('/')) == 6:
                     quote_list.append((text, url))
 
-            content_tag = soup.find("div", {"class":"article-content"})
+            author_tag = soup.find("span", {"class": "author-name"})
+            headline_tag = soup.find("h1", {"class": "wsj-article-headline"})
+
+            author = None
+            headline = None
+            try:
+                author = author_tag.get_text().strip()
+                headline = headline_tag.get_text().strip()
+            except AttributeError as e:
+                error_log = f"{a_date}'s {an_article_url} failed author: '{author}' or headline: '{headline}' retrieval due to {e}."
+                logger.register_log(error_log, logger_dir, log_filename)
+
+            content_tag = soup.find("div", {"class": "article-content"})
             try:
                 content = content_tag.get_text().strip()
             except AttributeError as e:
-                error_log = f"{a_date}'s {an_article_url} failed during content retrieval due to {e}."
+                error_log = f"{a_date}'s {an_article_url} failed during content retrieval due to {e} (content tag)."
                 logger.register_log(error_log, logger_dir, log_filename)
                 continue
 
 
-
+            json_output['author'] = author
+            json_output['headline'] = headline
             json_output['quotes'] = quote_list
             json_output['content'] = content
+
 
             # with open(article_storage_dir + an_article_url_suffix + '-quotes.txt', 'w+') as quote_f:
             #     quote_f.write('\n'.join(quote_list))
