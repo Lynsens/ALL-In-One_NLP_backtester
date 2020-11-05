@@ -1,6 +1,7 @@
 # Project Specific
 
 # Ignored folders
+**/logs/**
 logs/*
 playground/*
 
