@@ -1,0 +1,13 @@
+{
+    "title": "WSJ_JSON_schema",
+    "type": "object",
+    "properties": {
+        "channel": {"type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "title": {"type": "string"},
+        "url": {"type": "string"},
+        "topic": {"type": "string"},
+        "author": {"type": "string"},
+    }
+    "required": ["url", "date"]
+}
