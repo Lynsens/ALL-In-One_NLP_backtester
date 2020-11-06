@@ -13,10 +13,11 @@ from datetime import datetime, timedelta
 import archive_url_scraper
 import article_content_scraper
 import uuid_generator
+import company_market_data_scraper
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
 options = webdriver.ChromeOptions()
-options.add_argument('headless')
+# options.add_argument('headless')
 driver = webdriver.Chrome(options=options)
 
 setting_file_path = os.path.join(os.path.dirname(__file__), os.pardir, 'setting.json')
@@ -32,4 +33,6 @@ if not os.path.exists(output_dir):
 archive_url_scraper.login(driver, setting['token'])
 archive_url_scraper.get_article_urls(driver, setting['duration'], setting['dir']['output_dir'])
 article_content_scraper.get_articles(driver, setting['dir']['output_dir'])
+
 uuid_generator.assign_uuid_articles(setting['dir']['output_dir'])
+company_market_data_scraper.collect_quote_list(setting['dir']['output_dir'])
