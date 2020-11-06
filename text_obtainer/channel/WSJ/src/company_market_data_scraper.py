@@ -16,6 +16,17 @@ channel_dir = os.path.dirname(publisher_dir)
 text_obtainer_dir = os.path.dirname(channel_dir)
 sys.path.insert(0, text_obtainer_dir)
 import logger
+
+
+def get_market_data_tags(driver, company_market_url):
+    driver.get(company_market_url)
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    ticker_tag = soup.find("span", {"class":"tickerName"})
+    exchange_tag = soup.find("span", {"class":"exchangeName"})
+    legal_full_name_tag = soup.find("span", {"class":"companyName"})
+
+    return ticker_tag, exchange_tag, legal_full_name_tag
+
 def collect_quote_list(output_dir):
     article_storage_dir = output_dir + 'articles/'
     market_data_output_dir = output_dir + 'market_data/'
