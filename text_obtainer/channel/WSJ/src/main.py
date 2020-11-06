@@ -17,7 +17,7 @@ import company_market_data_scraper
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
 options = webdriver.ChromeOptions()
-# options.add_argument('headless')
+options.add_argument('headless')
 driver = webdriver.Chrome(options=options)
 
 setting_file_path = os.path.join(os.path.dirname(__file__), os.pardir, 'setting.json')
@@ -36,3 +36,4 @@ article_content_scraper.get_articles(driver, setting['dir']['output_dir'])
 
 uuid_generator.assign_uuid_articles(setting['dir']['output_dir'])
 company_market_data_scraper.collect_quote_list(setting['dir']['output_dir'])
+company_market_data_scraper.get_market_data_via_WSJ(driver, setting['dir']['output_dir'], retry_limit = 1, google_search_result_collect_limit = 3, scale_serp_api_key = setting['scale_serp']['api_key'])
