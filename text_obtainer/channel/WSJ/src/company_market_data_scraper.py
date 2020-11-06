@@ -158,10 +158,23 @@ def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1, scale_serp_api_
         json.dump(company_market_LUT, output_f, indent = 4)
 
 
-# def get_market_data_via_google(driver, company_name, scale_serp_api_key):
-#     search_term_suffix = " WSJ market data site: www.wsj.com"
-#     search_term = "\"" + company_name + "\"" + search_term_suffix
-#     params = {
-#           'api_key': scale_serp_api_key,
-#           'q': search_term
-#         }
+def get_market_data_via_google(a_company, google_search_result_collect_limit, scale_serp_api_key):
+    search_term_suffix = " WSJ market data site: www.wsj.com"
+    search_term = "\"" + a_company + "\"" + search_term_suffix
+    params = {
+          'api_key': scale_serp_api_key,
+          'q': search_term
+    }
+
+    api_result = requests.get('https://api.scaleserp.com/search', params)
+    api_result = api_result.json()
+    entry_candidates = api_result['organic_results']
+
+    url_candidates = []
+    for an_entry in entry_candidates:
+        if 'www.wsj.com/market-data/quotes' in an_entry['link']:
+            url_candidates.append(an_entry['link'])
+
+
+    log_msg = f"{a_company} has extended with {len(url_candidates[:google_search_result_collect_limit])} ({len(url_candidates)} available) candidate urls (from Google)."
+    return url_candidates[:google_search_result_collect_limit], log_msg
