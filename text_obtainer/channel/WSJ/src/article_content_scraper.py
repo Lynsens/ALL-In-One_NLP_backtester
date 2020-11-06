@@ -57,7 +57,7 @@ def get_articles(driver, output_dir):
             for i in quote_tags:
                 url = i['href']
                 text = i.text
-                if 'market-data/quotes/' in url and len(url.split('/')) == 6:
+                if 'market-data/quotes/' in url and len(url.split('/')) == 6 and '?mod=' not in url:
                     quote_list.append((text, url))
 
             author_tag = soup.find("span", {"class": "author-name"})
