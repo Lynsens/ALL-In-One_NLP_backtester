@@ -22,15 +22,31 @@ def get_market_data_tags(driver, company_market_url):
     driver.get(company_market_url)
     soup = BeautifulSoup(driver.page_source, 'lxml')
 
+    tag_structure_1 = True
+    tag_structure_2 = False
     try:
         target_tag = soup.find("div", {"class": "WSJTheme--title--8uZ7oFS7"})
         ticker_exchange_tag = target_tag.find("span")
         legal_full_name_tag = target_tag.find("h1")
     except AttributeError as e:
-        ticker_exchange_tag = None
-        legal_full_name_tag = None
+        tag_structure_1 = False
 
-    return ticker_exchange_tag, legal_full_name_tag
+    if tag_structure_1 == False:
+        try:
+            ticker_tag = soup.find("span", {"class":"tickerName"})
+            exchange_tag = soup.find("span", {"class":"exchangeName"})
+            legal_full_name_tag = soup.find("span", {"class":"companyName"})
+        except AttributeError as e:
+            tag_structure_2 = False
+        else:
+            tag_structure_2 = True
+
+    if tag_structure_2:
+        return [ticker_tag, exchange_tag, legal_full_name_tag]
+    elif tag_structure_1:
+        return [ticker_exchange_tag, legal_full_name_tag]
+    else:
+        return [None]
 
 def collect_quote_list(output_dir):
     article_storage_dir = output_dir + 'articles/'
@@ -66,21 +82,28 @@ def collect_quote_list(output_dir):
         json.dump(quote_dict, output_f, indent = 4)
 
 
-def register_tags_to_LUT(company_market_LUT, raw_company_market_LUT, ticker_exchange_tag, legal_full_name_tag, a_company, an_url, output_dir):
+def register_tags_to_LUT(company_market_LUT, raw_company_market_LUT, tags, a_company, an_url, output_dir):
     logger_dir = output_dir + 'logs/'
     log_filename = 'WSJ_market_data_log.txt'
 
     valid_company_flag = True
     try:
-        ticker_exchange_text = ticker_exchange_tag.get_text().strip()
-        ticker_text = ticker_exchange_text.split('(')[0].strip()
-        exchange_text = ticker_exchange_text.split('(')[1][:-1].strip()
+        if len(tags) == 2:
+            ticker_exchange_text = tags[0].get_text().strip()
+            ticker_text = ticker_exchange_text.split('(')[0].strip()
+            exchange_text = ticker_exchange_text.split('(')[1][:-1].strip()
+        elif len(tags) == 3:
+            ticker_text = tags[0].get_text().strip()
+            exchange_text = tags[1].get_text().strip().strip('(').strip(')')
+        else:
+            raise AttributeError
+
     except AttributeError as e:
         ticker_text = 'ticker not on stock market'
         exchange_text = 'exchange not on stock market'
         valid_company_flag = False
     try:
-        legal_full_name_text = legal_full_name_tag.get_text().strip()
+        legal_full_name_text = tags[-1].get_text().strip()
     except AttributeError as e:
         legal_full_name_text = 'legal full name not on stock market'
         valid_company_flag = False
@@ -106,8 +129,8 @@ def register_tags_to_LUT(company_market_LUT, raw_company_market_LUT, ticker_exch
 
     else:
         error_logged_flag = False
-        if None in [ticker_exchange_tag, legal_full_name_tag]:
-            error_log_msg = f"{a_company} failed to register with {an_url} due to ticker_exchange: {ticker_exchange_tag}, legal_full_name: {legal_full_name_tag}"
+        if None in tags:
+            error_log_msg = f"{a_company} failed to register with {an_url} due to tags being: {tags}."
             logger.register_log(error_log_msg, logger_dir, log_filename)
             error_logged_flag = True
 
@@ -143,13 +166,13 @@ def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1, google_search_r
 
             retry_counter = 0
             while True:
-                ticker_exchange_tag, legal_full_name_tag = get_market_data_tags(driver, an_url)
+                tags = get_market_data_tags(driver, an_url)
                 retry_counter += 1
-                if None not in [ticker_exchange_tag, legal_full_name_tag] or retry_counter > retry_limit:
+                if None not in tags or retry_counter > retry_limit:
                     break
             checked_url_list.append(an_url)
 
-            updated_LUT = register_tags_to_LUT(company_market_LUT, raw_company_market_LUT, ticker_exchange_tag, legal_full_name_tag, a_company, an_url, output_dir)
+            updated_LUT = register_tags_to_LUT(company_market_LUT, raw_company_market_LUT, tags, a_company, an_url, output_dir)
 
             if updated_LUT is not False:
                 company_market_LUT = updated_LUT
