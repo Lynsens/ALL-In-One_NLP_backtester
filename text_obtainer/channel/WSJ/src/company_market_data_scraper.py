@@ -21,11 +21,16 @@ import logger
 def get_market_data_tags(driver, company_market_url):
     driver.get(company_market_url)
     soup = BeautifulSoup(driver.page_source, 'lxml')
-    ticker_tag = soup.find("span", {"class":"tickerName"})
-    exchange_tag = soup.find("span", {"class":"exchangeName"})
-    legal_full_name_tag = soup.find("span", {"class":"companyName"})
 
-    return ticker_tag, exchange_tag, legal_full_name_tag
+    try:
+        target_tag = soup.find("div", {"class": "WSJTheme--title--8uZ7oFS7"})
+        ticker_exchange_tag = target_tag.find("span")
+        legal_full_name_tag = target_tag.find("h1")
+    except AttributeError as e:
+        ticker_exchange_tag = None
+        legal_full_name_tag = None
+
+    return ticker_exchange_tag, legal_full_name_tag
 
 def collect_quote_list(output_dir):
     article_storage_dir = output_dir + 'articles/'
@@ -57,6 +62,84 @@ def collect_quote_list(output_dir):
                     else:
                         quote_dict[company_name]['quoted_in'] = [article_json['article_id']]
 
-    with open(market_data_output_dir + 'company_market_LUT.json', 'w+') as output_f:
+    with open(market_data_output_dir + 'raw_company_market_LUT.json', 'w+') as output_f:
         json.dump(quote_dict, output_f, indent = 4)
 
+
+def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1):
+    market_data_output_dir = output_dir + 'market_data/'
+    logger_dir = output_dir + 'logs/'
+    log_filename = 'WSJ_market_data_log.txt'
+
+    with open(market_data_output_dir + 'raw_company_market_LUT.json', 'r') as LUT_f:
+        raw_company_market_LUT = json.load(LUT_f)
+
+    company_market_LUT = dict()
+    checked_url_list = []
+    for (a_company, v) in raw_company_market_LUT.items():
+
+        for an_url in v['url']:
+            if an_url in checked_url_list:
+                continue
+
+
+            retry_counter = 0
+            while True:
+                ticker_exchange_tag, legal_full_name_tag = get_market_data_tags(driver, an_url)
+                retry_counter += 1
+                if None not in [ticker_exchange_tag, legal_full_name_tag] or retry_counter > retry_limit:
+                    break
+            checked_url_list.append(an_url)
+
+            valid_company_flag = True
+            try:
+                ticker_exchange_text = ticker_exchange_tag.get_text().strip()
+                ticker_text = ticker_exchange_text.split('(')[0]
+                exchange_text = ticker_exchange_text.split('(')[1][:-1]
+            except AttributeError as e:
+                ticker_text = 'ticker not on stock market'
+                exchange_text = 'exchange not on stock market'
+                valid_company_flag = False
+            try:
+                legal_full_name_text = legal_full_name_tag.get_text().strip()
+            except AttributeError as e:
+                legal_full_name_text = 'legal full name not on stock market'
+                valid_company_flag = False
+
+            US_market_flag = True
+            if valid_company_flag == True:
+                if 'U.S.' not in exchange_text:
+                    valid_company_flag = False
+                    US_market_flag = False
+
+            if valid_company_flag == True:
+                company_market_LUT[a_company] = dict()
+                company_market_LUT[a_company]['market_data_url'] = an_url
+                company_market_LUT[a_company]['ticker'] = ticker_text
+                company_market_LUT[a_company]['exchange'] = exchange_text
+                company_market_LUT[a_company]['legal_full_name'] = legal_full_name_text
+                company_market_LUT[a_company]['quoted_in'] = raw_company_market_LUT[a_company]['quoted_in']
+
+                log_msg = f"{a_company} successfully registered with information from {an_url} (quoted {len(company_market_LUT[a_company]['quoted_in'])}): ticker: {company_market_LUT[a_company]['ticker']}, exchange: {company_market_LUT[a_company]['exchange']}, legal_full_name: {company_market_LUT[a_company]['legal_full_name']}."
+                logger.register_log(log_msg, logger_dir, log_filename)
+                break
+
+            else:
+                error_logged_flag = False
+                if None in [ticker_exchange_tag, legal_full_name_tag]:
+                    error_log_msg = f"{a_company} failed to register with {an_url} due to ticker_exchange: {ticker_exchange_tag}, legal_full_name: {legal_full_name_tag}"
+                    logger.register_log(error_log_msg, logger_dir, log_filename)
+                    error_logged_flag = True
+
+                if US_market_flag == False:
+                    error_log_msg = f"{a_company} failed to register with {an_url} since exchange being non-US: {exchange_text}."
+                    logger.register_log(error_log_msg, logger_dir, log_filename)
+                    error_logged_flag = True
+
+                if error_logged_flag == False:
+                    error_log_msg = f"{a_company} failed to register with {an_url} for unknown reasons."
+                    logger.register_log(error_log_msg, logger_dir, log_filename)
+                continue
+
+        with open(market_data_output_dir + 'company_market_LUT.json', 'w') as output_f:
+            json.dump(company_market_LUT, output_f, indent = 4)
