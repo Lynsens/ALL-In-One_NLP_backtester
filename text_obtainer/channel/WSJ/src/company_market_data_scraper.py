@@ -122,7 +122,7 @@ def register_tags_to_LUT(company_market_LUT, raw_company_market_LUT, ticker_exch
 
         return False
 
-def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1, scale_serp_api_key = None):
+def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1, google_search_result_collect_limit = 3, scale_serp_api_key = None):
     market_data_output_dir = output_dir + 'market_data/'
     logger_dir = output_dir + 'logs/'
     log_filename = 'WSJ_market_data_log.txt'
@@ -134,7 +134,9 @@ def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1, scale_serp_api_
     checked_url_list = []
     for (a_company, v) in raw_company_market_LUT.items():
 
-        for an_url in v['url']:
+        target_url_list = v['url']
+        googled_flag = False
+        for an_url in target_url_list:
             if an_url in checked_url_list:
                 continue
 
@@ -152,6 +154,12 @@ def get_market_data_via_WSJ(driver, output_dir, retry_limit = 1, scale_serp_api_
             if updated_LUT is not False:
                 company_market_LUT = updated_LUT
                 break
+            else:
+                if an_url == target_url_list[-1] and googled_flag == False:
+                    google_url_candidates, log_msg = get_market_data_via_google(a_company, google_search_result_collect_limit, scale_serp_api_key)
+                    target_url_list.extend(google_url_candidates)
+                    logger.register_log(log_msg, logger_dir, log_filename)
+                    googled_flag = True
 
 
     with open(market_data_output_dir + 'company_market_LUT.json', 'w') as output_f:
