@@ -62,7 +62,7 @@ The reason of this delay are mainly two-fold: one if the midterm, the plan we ha
     * Visualizer development with respect to trade log.
     * Data organizer design.
 
-But with various midterm dates among different group members, we can hardly unify our time to design a trade log. The second is there is a structure change among WSJ webpage around the time of `2012`, thus we have to therefore develop an alternative scraper to corporate the alternative structure, and integrate this into our program workflow -- which is rather complicated.
+But with various midterm dates among different group members, we can hardly unify our time to design a trade log. The second is there is a structure change among WSJ webpage around the time of `2012`, thus we have to therefore develop an alternative scraper to support the alternative structure, and integrate this into our program workflow -- which is rather complicated.
 
 However, we have done our solo work rather nicely. We are particularly proud in terms of the workflow and folder structure we designed and implemented (details in the following section).
 
@@ -70,10 +70,59 @@ However, we have done our solo work rather nicely. We are particularly proud in 
 
 
 #### Demo of Achievement
-It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `text_obtainer` module running, and some of them cost money. So here's a gif of how it will look like when executed. We choose [WSJ News Archive for January 2](https://www.wsj.com/news/archive/2012/01/02) to be the demo day, although it can technically obtain data from any day or duration of days as long as the page structure is supported:
+It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `text_obtainer` module running, and some of them cost money. So here's a GIF of how it will look like when executed. We choose [WSJ News Archive for January 2](https://www.wsj.com/news/archive/2012/01/02) to be the demo day, although it can technically obtain data from any day or duration of days as long as the page structure is supported:
 
 
 ![text_obtainer_demo_720p](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_demo_720p.gif)
+
+Note this is just the log of the executed task, each article will be stored in the format of:
+
+```
+{
+    "channel": "WSJ",
+    "date": "20120102",
+    "url": "https://www.wsj.com/articles/SB10001424052970203462304577134772333692402",
+    "author": "Danny Yadron",
+    "headline": "Jabs Fly as Iowa Caucuses Near",
+    "quotes": [],
+    "content": "MARSHALLTOWN, IOWA -- Former House Speaker Newt Gingrich signaled here Sunday that he plans to take a much more confrontational approach against GOP presidential front-runner Mitt Romney as the nominating race moves from Iowa to New Hampshire. \nThe change suggests that Mr. Gingrich feels less threatened by former Sen. Rick Santorum, who has recently surged in Iowa polls, than by the barrage of negative ads that have aired in Iowa...",
+    "article_id": "d26a648d-fd8e-4ab6-8de0-37e38f98322a"
+}
+```
+And a `company_market_LUT` like:
+
+```
+{
+    "Leap Wireless International": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/LEAP.UT",
+        "ticker": "LEAP.UT",
+        "exchange": "U.S.: NYSE",
+        "legal_full_name": "Ribbit LEAP Ltd. Un",
+        "quoted_in": [
+            "6d2cb1fa-a88a-407a-a71d-1c3ca7407447"
+        ]
+    },
+    "Bayer": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/BAYRY",
+        "ticker": "BAYRY",
+        "exchange": "U.S.: OTC",
+        "legal_full_name": "Bayer AG ADR",
+        "quoted_in": [
+            "090faba5-1f06-462f-b685-16e1f8e95768"
+        ]
+    },
+    "BASF": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/BASFY",
+        "ticker": "BASFY",
+        "exchange": "U.S.: OTC",
+        "legal_full_name": "BASF SE ADR",
+        "quoted_in": [
+            "090faba5-1f06-462f-b685-16e1f8e95768"
+        ]
+    },
+    ...
+}
+```
 
 #### Folder Structure
 ![text_obtainer_folder_structure](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_folder_structure.png)
@@ -81,15 +130,15 @@ It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `te
 The [text_obtainer](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer) folder is where everything starts. It first contains a [`logger.py`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/logger.py) to store the log of the task in its output.
 
 
-Then, in its subfolder [channel](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel), we have listed all supported publisher. In this case, we have [WSJ](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ) implemented to be the demo.
+Then, in its subfolder [channel](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel), we have listed all supported publishers. In this case, we have [WSJ](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ) implemented to be the demo.
 
-The [WSJ/src](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ/src) contains many modules to support obtaining data from such publisher. These modules may vary depending on the publisher you desired, as they may organize their interface in very different ways. But the common thing is simple, you setup your [`setting.json`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/channel/WSJ/setting.json) with required account token, and you are good to go with:
+The [WSJ/src](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ/src) contains many modules to support obtaining data from such publisher. These modules may vary depending on the publisher you desired, as each publisher may organize their interface in very different ways. But the common thing is simple, you setup your [`setting.json`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/channel/WSJ/setting.json) with required account credentials and essential informations (start/end date, output directory, etc), and you are good to go with:
 
 ```
 ALO_NLP_backtester $ python3 text_obtainer/channel/WSJ/src/main.py
 ```
 
-The outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it, and also for copyright concerns. In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs* and *text_obtainer_output/market_data* accordingly.
+The outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it (and also for copyright concerns). In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs* and *text_obtainer_output/market_data* accordingly.
 
 #### Workflow
 
@@ -98,7 +147,7 @@ The outputs will be stored in the *text_obtainer_output* folder. This folder is 
 
 #### Scalability and Implementation Details
 
-We have implemented some unique identifier as an overlay of company and articles, so the generally structure can be universally used across different publishers — should the `text_obtainer` of another channel will be implemented. This will facilitate the process of coupling with the virtual trading platform. However, we noticed this layer will only helps us ID which company is mentioned in which article, we can't do something like "filter articles with more than 500 words" without iterating through all articles. This will be something critical as some models may not take an article as input due to some property of the article (like the abovementioned length), even though such article is obtainable (and it is already obtained) by our program.
+We have implemented some unique identifier as an overlay of company and articles, so the general structure can be universally used across different publishers — should the `text_obtainer` of another channel will be implemented. This will facilitate the process of coupling with the virtual trading platform. However, we noticed this layer will only helps us ID which company is mentioned in which article, we can't do something like "filter articles with more than 500 words" without iterating through all articles. This will be something critical as some models may not take an article as input due to some property of the article (like the abovementioned length), even though such article is obtainable (and it is already obtained) by our program.
 
 To overcome this, We plan to have something like [`unit_schema.json`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/channel/WSJ/scheme/unit_schema.json) to check the validity before the program stores each smallest unit object (an article in the WSJ case). So by editing the JSON schema, the user may implant some limiters onto our program when obtaining textual data from certain publishers.
 
@@ -147,7 +196,7 @@ Besides, after further investigation, we found that for the average researcher, 
 
 To allow the users program their model in an active scheme, we provide the following new functions as a complement to the original third phase:
 
-| Function | Parameters | Description | 
+| Function | Parameters | Description |
 |--------|------|-------|
 |`.emulate_init()`| None | Initialize the emulation related variables. Basically the same work as the initialization done with in the `run()` function. |
 |`.emulate_iterate()`| None | Proceed to the next time frame. Updates the data to the next time frame within the platform.</br>Returns a tuple of the exact same variables that would have been passed to the callback function. Returns an empty tuple that would evaluate to `False` when we reach the ending timestamp and the emulation is finished. |
@@ -230,6 +279,7 @@ Please refer to the **Updated Management Plan** section for a more detailed time
     * Drafted **Regarding Text Input** section of *Progress Report 2* with Mocun. `report`
     * Wrote **Background** section of *Progress Report 2*. It is mostly similar to what we have in *Progress Report 1* which involves Jiaqi's input. `report`
     * Wrote **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*, however the it is just a reflection of our team discussion.  `report` `management`
+    * Registered and submitted abstract for SOURCE. `report`
 
 * **Jiaqi YU**
     * Researched the implementations of necessary components of stock market trading. `design`
