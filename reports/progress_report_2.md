@@ -62,7 +62,7 @@ The reason of this delay are mainly two-fold: one if the midterm, the plan we ha
     * Visualizer development with respect to trade log.
     * Data organizer design.
 
-But with various midterm dates among different group members, we can hardly unify our time to design a trade log. The second is there is a structure change among WSJ webpage around the time of `2012`, thus we have to therefore develop an alternative scraper to corporate the alternative structure, and integrate this into our program workflow -- which is rather complicated.
+But with various midterm dates among different group members, we can hardly unify our time to design a trade log. The second is there is a structure change among WSJ webpage around the time of `2012`, thus we have to therefore develop an alternative scraper to support the alternative structure, and integrate this into our program workflow -- which is rather complicated.
 
 However, we have done our solo work rather nicely. We are particularly proud in terms of the workflow and folder structure we designed and implemented (details in the following section).
 
@@ -147,7 +147,7 @@ The outputs will be stored in the *text_obtainer_output* folder. This folder is 
 
 #### Scalability and Implementation Details
 
-We have implemented some unique identifier as an overlay of company and articles, so the generally structure can be universally used across different publishers — should the `text_obtainer` of another channel will be implemented. This will facilitate the process of coupling with the virtual trading platform. However, we noticed this layer will only helps us ID which company is mentioned in which article, we can't do something like "filter articles with more than 500 words" without iterating through all articles. This will be something critical as some models may not take an article as input due to some property of the article (like the abovementioned length), even though such article is obtainable (and it is already obtained) by our program.
+We have implemented some unique identifier as an overlay of company and articles, so the general structure can be universally used across different publishers — should the `text_obtainer` of another channel will be implemented. This will facilitate the process of coupling with the virtual trading platform. However, we noticed this layer will only helps us ID which company is mentioned in which article, we can't do something like "filter articles with more than 500 words" without iterating through all articles. This will be something critical as some models may not take an article as input due to some property of the article (like the abovementioned length), even though such article is obtainable (and it is already obtained) by our program.
 
 To overcome this, We plan to have something like [`unit_schema.json`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/channel/WSJ/scheme/unit_schema.json) to check the validity before the program stores each smallest unit object (an article in the WSJ case). So by editing the JSON schema, the user may implant some limiters onto our program when obtaining textual data from certain publishers.
 
@@ -196,7 +196,7 @@ Besides, after further investigation, we found that for the average researcher, 
 
 To allow the users program their model in an active scheme, we provide the following new functions as a complement to the original third phase:
 
-| Function | Parameters | Description | 
+| Function | Parameters | Description |
 |--------|------|-------|
 |`.emulate_init()`| None | Initialize the emulation related variables. Basically the same work as the initialization done with in the `run()` function. |
 |`.emulate_iterate()`| None | Proceed to the next time frame. Updates the data to the next time frame within the platform.</br>Returns a tuple of the exact same variables that would have been passed to the callback function. Returns an empty tuple that would evaluate to `False` when we reach the ending timestamp and the emulation is finished. |
