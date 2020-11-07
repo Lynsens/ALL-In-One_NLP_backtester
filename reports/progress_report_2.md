@@ -105,10 +105,77 @@ To overcome this, We plan to have something like [`unit_schema.json`](https://gi
 
 ### Regarding Trading
 
+#### Recap from progress report 1:
 
- > **Jiaqi please add your parts here.**
+In the previous report, we finished the basic design of the backtesting platform, following the principle of being simple while scalable. To run a model on this backtesting platform involves three phases, configuration, data fetching, and emulation.
 
+In the first configuration phase, the user initialize an instance of the backtesting module, configures the features according to the model, including the time frame, the reporting features, and the callback function from the model that would be used when the emulation starts.
 
+Then, in the second data fetching phase, which is also optional, the user may import data by batch for the model to be trained offline. The data provided in this step is also complied to the configurations above. This step is optional, depending on whether the model is partially trained offline or completely online.
+
+Finally, finishing all the configuration, the user may start the emulation, and the platform would run the model on the selected time frames.
+
+#### Design Update:
+
+We have refined our design in several aspects, making it provides a more comprehensive feature set as well as an easier interface.
+
+First of all, we designed an interface, involving several "get" functions, for the user to fetch the result after the emulation finished. We originally expected that the user may easily keep the statics within their model. However, since we wanted our user to focus simply on their model, leaving all the backtesting related codes to our platform, we decided to add the statistic features, which keeps track of several simple statics about trading, allowing users to analysis or even plot the trading history easily.
+
+We provides the following data in our statics. Note that despite that some of these statistics are available within the `backtesting` module of python, we actually re-implemented most of them. This is due to that the statistics provided in `backtesting` only applies to the fixed time frame, and could be wrong when we emulate the trades on different time frames and with the market events.
+
+| Data | Description |
+| ---- | ----------- |
+|`Start Time`| The beginning timestamp of the emulation. Returned in human-friendly format. |
+|`End Time`| The ending timestamp of the emulation. Returned in human-friendly format. |
+|`Total Frame Count`| The total time frame count. Equivalent to the total time of the callback function being called, or the time the iteration function being called in the active emulation mode. |
+|`Total Event Count`| The total number of market event occurred during the emulation. |
+|`Exposure Time`| The weighted average time of the capital being invested in the market. |
+|`Initial Capital`| The owned capital size before the emulation started. |
+|`Final Capital`| The owned capital size after the emulation ended. |
+|`Maximum Capital`| The maximum capital the model ever reached during the emulation. |
+|`Minimum Capital`| The minimum capital the model ever reached during the emulation. |
+|`Return`| The overall return. Equivalent to the Final Capital divided by the Initial Capital. |
+|`Total Trade Count`| The total number of trades initiated by the model. |
+|`Winning Trade`| The percentage of all the trades that have a positive return comparing to the last trade. |
+|`Best Trade`| The highest return of a single trade ever during the emulation. |
+|`Worst Trade`| The lowest (usually negative) return of a single trade ever during the emulation. |
+|`Average Trade`| The average trade return through the emulation. |
+|`Expectancy`| The probabilistic expectation of the trade return. Calculated from the winning/losing rate and the average winning/losing size. |
+|`Trade List`| The  |
+
+Besides, after further investigation, we found that for the average researcher, it could be hard if we only allow the model to be run with a callback function - it is actually counter-intuitive to write a responsive program module, and could be a challenge for the model designer. It could be much easier for the users if we allow the users to actively request for the new time frame, and we make our backtesting platform responsive. This is also a feature that most of the backtesting system lack of.
+
+To allow the users program their model in an active scheme, we provide the following new functions as a complement to the original third phase:
+
+| Function | Parameters | Description | 
+|--------|------|-------|
+|`.emulate_init()`| None | Initialize the emulation related variables. Basically the same work as the initialization done with in the `run()` function. |
+|`.emulate_iterate()`| None | Proceed to the next time frame. Updates the data to the next time frame within the platform.</br>Returns a tuple of the exact same variables that would have been passed to the callback function. Returns an empty tuple that would evaluate to `False` when we reach the ending timestamp and the emulation is finished. |
+
+#### Current Progress:
+
+Phase 1:
+
+| Functions/Features | Progress |
+| public configuration variables | Done. |
+| initialization | To be implemented. |
+| `set_init_callback()` | Done. |
+| `set_iterate_callback()` | Done. |
+
+Phase 2:
+
+| Functions/Features | Progress |
+| public configuration variables | Done. |
+| `prefetch_data()` | Work in progress. |
+
+Phase 3:
+
+| Functions/Features | Progress |
+| callback market events | Work in Progress. |
+| `run()` | To be implemented. |
+| `trade()` | Work in progress. |
+|`.emulate_init()`| Work in progress. |  |
+|`.emulate_iterate()`| To be implemented. |
 
 ### Regarding Visualization
 

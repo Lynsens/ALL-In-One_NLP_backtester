@@ -125,7 +125,7 @@ In the configuration phase, the user would initialize an instance of the backtes
 
 The second phase for the model to load the data, is actually optional. This is designed for the models that need to be trained, or would be more efficient if first trained, with batches of data first before it could be run online. We provides the following data fetching function:
 
-| Function | Parameters | Description | 
+| Function | Parameters | Description |
 |--------|------|-------|
 |`.prefetch_data()`| start_time: integer, end_time: integer, *list_of_features: enumerators | Returns the data within the selected time interval with selected features.</br>In real world applications, one don't have to call this function only once, fetch all the data into a table, and slice them by itself. Instead, it is suggested to call this function multiple times and feed the required data directly into the algorithms.</br>For the list of features, see below.|
 
