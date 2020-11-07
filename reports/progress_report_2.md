@@ -157,6 +157,7 @@ To allow the users program their model in an active scheme, we provide the follo
 Phase 1:
 
 | Functions/Features | Progress |
+|--------------------|----------|
 | public configuration variables | Done. |
 | initialization | To be implemented. |
 | `set_init_callback()` | Done. |
@@ -165,12 +166,14 @@ Phase 1:
 Phase 2:
 
 | Functions/Features | Progress |
+|--------------------|----------|
 | public configuration variables | Done. |
 | `prefetch_data()` | Work in progress. |
 
 Phase 3:
 
 | Functions/Features | Progress |
+|--------------------|----------|
 | callback market events | Work in Progress. |
 | `run()` | To be implemented. |
 | `trade()` | Work in progress. |
