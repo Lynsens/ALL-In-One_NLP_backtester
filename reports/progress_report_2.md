@@ -70,10 +70,59 @@ However, we have done our solo work rather nicely. We are particularly proud in 
 
 
 #### Demo of Achievement
-It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `text_obtainer` module running, and some of them cost money. So here's a gif of how it will look like when executed. We choose [WSJ News Archive for January 2](https://www.wsj.com/news/archive/2012/01/02) to be the demo day, although it can technically obtain data from any day or duration of days as long as the page structure is supported:
+It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `text_obtainer` module running, and some of them cost money. So here's a GIF of how it will look like when executed. We choose [WSJ News Archive for January 2](https://www.wsj.com/news/archive/2012/01/02) to be the demo day, although it can technically obtain data from any day or duration of days as long as the page structure is supported:
 
 
 ![text_obtainer_demo_720p](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_demo_720p.gif)
+
+Note this is just the log of the executed task, each article will be stored in the format of:
+
+```
+{
+    "channel": "WSJ",
+    "date": "20120102",
+    "url": "https://www.wsj.com/articles/SB10001424052970203462304577134772333692402",
+    "author": "Danny Yadron",
+    "headline": "Jabs Fly as Iowa Caucuses Near",
+    "quotes": [],
+    "content": "MARSHALLTOWN, IOWA -- Former House Speaker Newt Gingrich signaled here Sunday that he plans to take a much more confrontational approach against GOP presidential front-runner Mitt Romney as the nominating race moves from Iowa to New Hampshire. \nThe change suggests that Mr. Gingrich feels less threatened by former Sen. Rick Santorum, who has recently surged in Iowa polls, than by the barrage of negative ads that have aired in Iowa...",
+    "article_id": "d26a648d-fd8e-4ab6-8de0-37e38f98322a"
+}
+```
+And a `company_market_LUT` like:
+
+```
+{
+    "Leap Wireless International": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/LEAP.UT",
+        "ticker": "LEAP.UT",
+        "exchange": "U.S.: NYSE",
+        "legal_full_name": "Ribbit LEAP Ltd. Un",
+        "quoted_in": [
+            "6d2cb1fa-a88a-407a-a71d-1c3ca7407447"
+        ]
+    },
+    "Bayer": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/BAYRY",
+        "ticker": "BAYRY",
+        "exchange": "U.S.: OTC",
+        "legal_full_name": "Bayer AG ADR",
+        "quoted_in": [
+            "090faba5-1f06-462f-b685-16e1f8e95768"
+        ]
+    },
+    "BASF": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/BASFY",
+        "ticker": "BASFY",
+        "exchange": "U.S.: OTC",
+        "legal_full_name": "BASF SE ADR",
+        "quoted_in": [
+            "090faba5-1f06-462f-b685-16e1f8e95768"
+        ]
+    },
+    ...
+}
+```
 
 #### Folder Structure
 ![text_obtainer_folder_structure](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_folder_structure.png)
@@ -81,15 +130,15 @@ It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `te
 The [text_obtainer](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer) folder is where everything starts. It first contains a [`logger.py`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/logger.py) to store the log of the task in its output.
 
 
-Then, in its subfolder [channel](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel), we have listed all supported publisher. In this case, we have [WSJ](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ) implemented to be the demo.
+Then, in its subfolder [channel](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel), we have listed all supported publishers. In this case, we have [WSJ](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ) implemented to be the demo.
 
-The [WSJ/src](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ/src) contains many modules to support obtaining data from such publisher. These modules may vary depending on the publisher you desired, as they may organize their interface in very different ways. But the common thing is simple, you setup your [`setting.json`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/channel/WSJ/setting.json) with required account token, and you are good to go with:
+The [WSJ/src](https://github.com/choH/ALO_NLP_backtester/tree/master/text_obtainer/channel/WSJ/src) contains many modules to support obtaining data from such publisher. These modules may vary depending on the publisher you desired, as each publisher may organize their interface in very different ways. But the common thing is simple, you setup your [`setting.json`](https://github.com/choH/ALO_NLP_backtester/blob/master/text_obtainer/channel/WSJ/setting.json) with required account credentials and essential informations (start/end date, output directory, etc), and you are good to go with:
 
 ```
 ALO_NLP_backtester $ python3 text_obtainer/channel/WSJ/src/main.py
 ```
 
-The outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it, and also for copyright concerns. In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs* and *text_obtainer_output/market_data* accordingly.
+The outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it (and also for copyright concerns). In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs* and *text_obtainer_output/market_data* accordingly.
 
 #### Workflow
 
