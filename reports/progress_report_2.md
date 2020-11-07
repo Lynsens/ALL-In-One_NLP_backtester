@@ -279,6 +279,7 @@ Please refer to the **Updated Management Plan** section for a more detailed time
     * Drafted **Regarding Text Input** section of *Progress Report 2* with Mocun. `report`
     * Wrote **Background** section of *Progress Report 2*. It is mostly similar to what we have in *Progress Report 1* which involves Jiaqi's input. `report`
     * Wrote **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*, however the it is just a reflection of our team discussion.  `report` `management`
+    * Registered and submitted abstract for SOURCE. `report`
 
 * **Jiaqi YU**
     * Researched the implementations of necessary components of stock market trading. `design`
