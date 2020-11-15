@@ -1,7 +1,11 @@
-import os
 import json
 from collections import defaultdict
+import string
 
+import os, sys, inspect
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+project_dir = os.path.dirname(current_dir)
+sys.path.insert(0, project_dir)
 import logger
 
 
