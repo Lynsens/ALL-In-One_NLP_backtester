@@ -37,6 +37,17 @@ def collect_company_mention_stats(task_dir, text_folder = 'articles', market_dat
 
             for a_company in LUT_data.keys():
                 a_company_mentioned_feq = str(article_json['content']).lower().count(str(a_company).lower())
+                a_company_mentioned_deduction = 0
+                for letter in string.ascii_lowercase:
+                    a_company_mentioned_deduction += str(article_json['content']).lower().count(str(a_company).lower() + letter)
+                    a_company_mentioned_deduction += str(article_json['content']).lower().count(letter + str(a_company).lower())
+
+                # content = str(article_json['content']).lower()
+                # content_no_punctu = content.translate(str.maketrans('', '', string.punctuation))
+
+
+                a_company_mentioned_feq -= a_company_mentioned_deduction
+
 
                 if a_company_mentioned_feq > 0:
                     article_json['mention'][a_company] = a_company_mentioned_feq
