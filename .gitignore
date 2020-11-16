@@ -4,6 +4,7 @@
 text_obtainer_output/**
 **/logs/**
 logs/*
+~$**
 
 playground/*
 pg_[0-9].py
