@@ -69,7 +69,7 @@ def get_most_freq_words(content, most_common_thld = 100):
 
 def get_sentiment_word_dict():
     sentiment_word_list_dir = './data_cleaner/Loughran_McDonald_sentiment_word_lists.xlsx'
-    sheet_name_list = ['Negative', 'Positive', 'Uncertainty', 'Litigious', 'StrongModal', 'Constraining']
+    sheet_name_list = ['Negative', 'Positive', 'Uncertainty', 'Litigious', 'StrongModal', 'WeakModal', 'Constraining']
 
     sentiment_word_dict = dict()
     for a_sheet in sheet_name_list:
