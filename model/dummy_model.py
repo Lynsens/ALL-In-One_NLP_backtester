@@ -61,3 +61,87 @@ def collect_article_sentiment_analysis(task_dir, mentioned_article_dict, output_
         json.dump(mentioned_article_sentiment_dict, output_f, indent = 4)
     return mentioned_article_sentiment_dict
 
+
+def calculate_company_sentiment_stats(task_dir, mentioned_article_sentiment_dict, output_filename = 'company_market_sentiment_LUT', market_data_folder = 'market_data', LUT_filename = 'company_market_LUT', log_filename = 'WSJ_dummy_model_log'):
+    logger_dir = task_dir + 'logs/'
+    log_filename = log_filename + '.txt'
+
+
+    LUT_dir = task_dir + market_data_folder + '/' + LUT_filename + '.json'
+    with open(LUT_dir, 'r') as LUT_f:
+        LUT_data = json.load(LUT_f)
+    company_market_sentiment_LUT = copy.deepcopy(LUT_data)
+
+    for v in company_market_sentiment_LUT.values():
+        v['sentiment_indicator'] = dict()
+
+    # ZeroDivisionError
+    for a_company, a_company_info in LUT_data.items():
+        for an_article, an_article_info in a_company_info['mentioned_in'].items():
+            an_article_sentiment = mentioned_article_sentiment_dict[an_article]['sentiment_analysis']
+
+            for a_catagory in an_article_sentiment.keys():
+                an_article_sentiment[a_catagory] = an_article_sentiment[a_catagory] * an_article_info['mentioned_time']
+
+
+            if an_article_info['date'] in company_market_sentiment_LUT[a_company]['sentiment_indicator']:
+                pre_counter = collections.Counter(company_market_sentiment_LUT[a_company]['sentiment_indicator'][an_article_info['date']])
+                current_counter = collections.Counter(an_article_sentiment)
+                updated_article_sentiment_dict = dict(pre_counter + current_counter)
+                company_market_sentiment_LUT[a_company]['sentiment_indicator'][an_article_info['date']] = updated_article_sentiment_dict
+            else:
+                company_market_sentiment_LUT[a_company]['sentiment_indicator'][an_article_info['date']] = an_article_sentiment
+
+            log_msg = f"Updated {an_article} (date: {an_article_info['date']}) sentiment analysis to {a_company}: {company_market_sentiment_LUT[a_company]['sentiment_indicator'][an_article_info['date']]}."
+            logger.register_log(log_msg, logger_dir, log_filename)
+
+
+    company_market_sentiment_LUT = add_trade_signal_to_LUT(company_market_sentiment_LUT)
+    output_path = task_dir + market_data_folder + '/' + output_filename + '.json'
+    with open(output_path, 'w+') as output_f:
+        json.dump(company_market_sentiment_LUT, output_f, indent = 4)
+
+    return mentioned_article_sentiment_dict
+
+
+def add_trade_signal_to_LUT(company_market_sentiment_LUT):
+
+    for a_company_info in company_market_sentiment_LUT.values():
+        for a_date, a_date_sentiment in a_company_info['sentiment_indicator'].items():
+            a_company_info['sentiment_indicator'][a_date] = generate_trade_signal(a_company_info['sentiment_indicator'][a_date])
+
+    return company_market_sentiment_LUT
+
+def generate_trade_signal(sentiment_indicator_dict, significant_coefficient = 1.2):
+
+    catagory_list = ['negative', 'positive', 'uncertainty', 'litigious', 'strongmodal', 'weakmodal', 'constrainin']
+    for catagory in catagory_list:
+        if catagory not in sentiment_indicator_dict:
+            sentiment_indicator_dict[catagory] = 0
+
+    D = copy.deepcopy(sentiment_indicator_dict)
+    for catagory in catagory_list:
+        D[catagory] += 1
+
+
+    pos_indicator = D['positive'] + 0.5 * D['strongmodal']
+    neg_indicator = D['negative'] + 0.5 * D['constrainin']
+
+    sentiment_indicator_dict['trade_indicator'] = (pos_indicator/neg_indicator, (pos_indicator, neg_indicator))
+
+
+    if pos_indicator > neg_indicator * significant_coefficient:
+        sentiment_indicator_dict['trade_signal'] = 'buy'
+    elif neg_indicator > pos_indicator * significant_coefficient:
+        sentiment_indicator_dict['trade_signal'] = 'sell'
+    else:
+        sentiment_indicator_dict['trade_signal'] = 'hold'
+
+    return sentiment_indicator_dict
+
+
+
+
+mentioned_article_sentiment_dict = collect_article_sentiment_analysis(output_dir, collect_mentioned_articles(output_dir))
+print(calculate_company_sentiment_stats(output_dir, mentioned_article_sentiment_dict))
+
