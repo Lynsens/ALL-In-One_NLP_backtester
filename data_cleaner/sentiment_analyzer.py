@@ -54,7 +54,8 @@ def remove_noise(tweet_tokens, stop_words = stopwords.words('english'), min_toke
 
         lemmatizer = WordNetLemmatizer()
         token = lemmatizer.lemmatize(token, pos)
-        if len(token) > min_token_len and len(token) <= max_token_len and token not in string.punctuation and token.lower() not in stop_words and token.lower() in words.words():
+        # if len(token) > min_token_len and len(token) <= max_token_len and token not in string.punctuation and token.lower() not in stop_words and token.lower() in words.words():
+        if len(token) > min_token_len and len(token) <= max_token_len and token not in string.punctuation and token.lower() not in stop_words:
             cleaned_tokens.append(token.lower())
     return cleaned_tokens
 
