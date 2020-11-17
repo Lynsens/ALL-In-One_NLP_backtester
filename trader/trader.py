@@ -36,6 +36,29 @@ class dummystg_passive(bt.Strategy):
     def next(self):
         pass
 
+"""
+Workflow:
+import trader as TD
+t=TD.trader(time_start = "YYYY-MM-DD", time_end = "YYYY-MM-DD")
+t.import_stock('AAPL') #Import as much as one want as long as the data for such symbol exists.
+#optionally:
+t.trade_on_close = True #So as to let trade happen on closing
+t.trade_mode = 'passive' #If the passive mode is desired (and the user would then have to define the strategy callbacks by themselves)
+#Then:
+t.trade_init(balance = 100, preowned_stocks = {}) #Arguments are optional. Balance default to 100. Preowned_stocks are specified as a dictionary, for example: {'AAPL':10}
+#Then trades:
+t.trade_buy('some_symbol')
+t.trade_sell('some_symbol')
+t.trade_next() #When you've done all the trades and want to procede to the next timeframe
+#When finishing:
+t.trade_finish()
+#Results are saved at:
+t.results[symbol] #which is a dictionary with the symbols as the keys
+#And to plot the graph for the trade:
+t.result_plotters[symbol]() #which is a dictionary of callables
+"""
+
+
 class trader():
     def __init__(self, mode = 'active', timeframe = 86400, time_start = 0, time_end = 0, commission = 0, trade_on_close = False):
         self.time_frame = timeframe # In seconds, default to 86400 (1 day).
@@ -202,4 +225,8 @@ class trader():
 
     def trade_finish(self):
         self.end_stockinstance()
-            
+        self.results = {}
+        self.result_plotters = {}
+        for stock in self.stock_dummyinst:
+            self.results[stock] = self.stock_dummyinst[stock]._results
+            self.result_plotters[stock] = self.stock_dummyinst[stock].plot
