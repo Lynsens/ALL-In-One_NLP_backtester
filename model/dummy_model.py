@@ -9,7 +9,7 @@ sys.path.insert(0, project_dir)
 import logger
 import data_cleaner.sentiment_analyzer as sentiment_analyzer
 
-output_dir = "./text_obtainer_output/WSJ_20120102_20120103/"
+output_dir = "./text_obtainer_output/WSJ_20120101_20120331/"
 
 
 def collect_mentioned_articles(task_dir, market_data_folder = 'market_data', LUT_filename = 'company_market_LUT', log_filename = 'WSJ_dummy_model_log'):
