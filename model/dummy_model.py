@@ -100,13 +100,16 @@ def calculate_company_sentiment_stats(task_dir, mentioned_article_sentiment_dict
 
     company_market_sentiment_LUT = add_trade_signal_to_LUT(company_market_sentiment_LUT)
 
+
+
     for a_company, a_company_info in company_market_sentiment_LUT.items():
         company_market_sentiment_LUT[a_company]['total_actionable_days'] = len(a_company_info['sentiment_indicator'].keys())
         company_market_sentiment_LUT[a_company]['total_mentioned_times'] = sum([v['mentioned_time'] for v in a_company_info['mentioned_in'].values()])
 
-        company_market_sentiment_LUT[a_company]['sentiment_indicator'] = sorted(a_company_info['sentiment_indicator'].items(), key = lambda date: datetime.strptime(date[0], "%Y%m%d"))
+        company_market_sentiment_LUT[a_company]['sentiment_indicator'] = {k: v for k, v in sorted(a_company_info['sentiment_indicator'].items(), key = lambda date: datetime.strptime(date[0], "%Y%m%d"))}
 
-    company_market_sentiment_LUT = sorted(company_market_sentiment_LUT.items(), key = lambda x: x[1]['total_actionable_days'], reverse = True)
+    company_market_sentiment_LUT = {k: v for k, v in sorted(company_market_sentiment_LUT.items(), key = lambda x: x[1]['total_actionable_days'], reverse = True)}
+
 
     output_path = task_dir + market_data_folder + '/' + output_filename + '.json'
     with open(output_path, 'w+') as output_f:
