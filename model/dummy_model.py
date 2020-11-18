@@ -10,8 +10,8 @@ sys.path.insert(0, project_dir)
 import logger
 import data_cleaner.sentiment_analyzer as sentiment_analyzer
 
-# output_dir = "./text_obtainer_output/WSJ_20120101_20120331/"
-output_dir = "./text_obtainer_output/WSJ_20120102_20120103/"
+output_dir = "./text_obtainer_output/WSJ_20120101_20120331/"
+# output_dir = "./text_obtainer_output/WSJ_20120102_20120103/"
 
 
 def collect_mentioned_articles(task_dir, market_data_folder = 'market_data', LUT_filename = 'company_market_LUT', log_filename = 'WSJ_dummy_model_log'):
@@ -115,6 +115,16 @@ def calculate_company_sentiment_stats(task_dir, mentioned_article_sentiment_dict
     with open(output_path, 'w+') as output_f:
         json.dump(company_market_sentiment_LUT, output_f, indent = 4)
 
+    log_msg = f"{output_filename} successfully exported to {output_path}."
+    logger.register_log(log_msg, logger_dir, log_filename)
+
+    clean_trade_signal_log = extract_clean_trade_signal_log(company_market_sentiment_LUT)
+    output_path = task_dir + market_data_folder + '/' + 'clean_trade_signal_log' + '.json'
+    with open(output_path, 'w+') as output_f:
+        json.dump(clean_trade_signal_log, output_f, indent = 4)
+    log_msg = f"clean_trade_signal_log successfully exported to {output_path}."
+    logger.register_log(log_msg, logger_dir, log_filename)
+
     return mentioned_article_sentiment_dict
 
 
@@ -153,6 +163,32 @@ def generate_trade_signal(sentiment_indicator_dict, significant_coefficient = 1.
         sentiment_indicator_dict['trade_info']['trade_signal'] = 'hold'
 
     return sentiment_indicator_dict
+
+def extract_clean_trade_signal_log(company_market_sentiment_LUT, actional_days_top_N_thld = 5):
+    if actional_days_top_N_thld > len(company_market_sentiment_LUT.keys()):
+        actional_days_top_N_thld = len(company_market_sentiment_LUT.keys())
+
+    counter = 0
+    clean_dict = dict()
+    for a_company, a_company_info in company_market_sentiment_LUT.items():
+        if counter == actional_days_top_N_thld:
+            break
+
+        clean_dict[a_company] = copy.deepcopy(a_company_info)
+        del clean_dict[a_company]['quoted_in']
+        del clean_dict[a_company]['mentioned_in']
+        del clean_dict[a_company]['sentiment_indicator']
+        clean_dict[a_company]['sentiment_indicator'] = dict()
+
+        for a_date, a_date_info in a_company_info['sentiment_indicator'].items():
+            clean_dict[a_company]['sentiment_indicator'][a_date] = a_date_info['trade_info']
+
+        counter += 1
+
+    return clean_dict
+
+
+
 
 
 
