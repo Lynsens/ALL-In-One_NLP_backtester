@@ -141,15 +141,16 @@ def generate_trade_signal(sentiment_indicator_dict, significant_coefficient = 1.
     pos_indicator = D['positive'] + 0.5 * D['strongmodal']
     neg_indicator = D['negative'] + 0.5 * D['constraining']
 
-    sentiment_indicator_dict['trade_indicator'] = (pos_indicator/neg_indicator, (pos_indicator, neg_indicator))
+    sentiment_indicator_dict['trade_info'] = dict()
+    sentiment_indicator_dict['trade_info']['trade_indicator'] = (pos_indicator/neg_indicator, (pos_indicator, neg_indicator))
 
 
     if pos_indicator > neg_indicator * significant_coefficient:
-        sentiment_indicator_dict['trade_signal'] = 'buy'
+        sentiment_indicator_dict['trade_info']['trade_signal'] = 'buy'
     elif neg_indicator > pos_indicator * significant_coefficient:
-        sentiment_indicator_dict['trade_signal'] = 'sell'
+        sentiment_indicator_dict['trade_info']['trade_signal'] = 'sell'
     else:
-        sentiment_indicator_dict['trade_signal'] = 'hold'
+        sentiment_indicator_dict['trade_info']['trade_signal'] = 'hold'
 
     return sentiment_indicator_dict
 
