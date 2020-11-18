@@ -128,7 +128,7 @@ def add_trade_signal_to_LUT(company_market_sentiment_LUT):
 
 def generate_trade_signal(sentiment_indicator_dict, significant_coefficient = 1.2):
 
-    catagory_list = ['negative', 'positive', 'uncertainty', 'litigious', 'strongmodal', 'weakmodal', 'constrainin']
+    catagory_list = ['negative', 'positive', 'uncertainty', 'litigious', 'strongmodal', 'weakmodal', 'constraining']
     for catagory in catagory_list:
         if catagory not in sentiment_indicator_dict:
             sentiment_indicator_dict[catagory] = 0
@@ -139,7 +139,7 @@ def generate_trade_signal(sentiment_indicator_dict, significant_coefficient = 1.
 
 
     pos_indicator = D['positive'] + 0.5 * D['strongmodal']
-    neg_indicator = D['negative'] + 0.5 * D['constrainin']
+    neg_indicator = D['negative'] + 0.5 * D['constraining']
 
     sentiment_indicator_dict['trade_indicator'] = (pos_indicator/neg_indicator, (pos_indicator, neg_indicator))
 
