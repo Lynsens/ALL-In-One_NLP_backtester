@@ -59,15 +59,15 @@ def get_article_urls(driver, duration, output_dir):
 
         daily_article_url_list = []
         try:
-            daily_article_url_list = scrape_headline_urls(driver, an_archive_url)
+            daily_article_url_list = scrape_headline_urls(driver, an_archive_url, logger_dir, log_filename)
         except AttributeError as e:
             log_msg = f'{a_date.strftime("%Y%m%d")} not retrieved due to {e}.'
             logger.register_log(log_msg, logger_dir, log_filename)
             continue
         while (len(daily_article_url_list) == 0):
             try:
-                daily_article_url_list = scrape_headline_urls(driver, an_archive_url)
-            except AttributeError as e:
+                daily_article_url_list = scrape_headline_urls(driver, an_archive_url, logger_dir, log_filename)
+            except (AttributeError, TypeError) as e:
                 log_msg = f'{a_date.strftime("%Y%m%d")} not retrieved due to {e}.'
                 logger.register_log(log_msg, logger_dir, log_filename)
                 break
@@ -81,7 +81,7 @@ def get_article_urls(driver, duration, output_dir):
 
 
 
-def scrape_headline_urls(driver, an_archive_url):
+def scrape_headline_urls(driver, an_archive_url, logger_dir, log_filename):
     driver.get(an_archive_url)
     soup = BeautifulSoup(driver.page_source, 'lxml')
 
@@ -93,8 +93,8 @@ def scrape_headline_urls(driver, an_archive_url):
     for an_o_url in archive_headline_url_list:
         regex_match = re.search("(SB)\d+", an_o_url)
         if regex_match is None:
-            log_msg = f"{a_date.strftime('%Y%m%d')}\'s hyperlink {an_o_url} not logged."
-            register_url_log(log_msg)
+            log_msg = f"Hyperlink {an_o_url} not logged."
+            logger.register_log(log_msg, logger_dir, log_filename)
             continue
         a_stripped_url = regex_match.group(0)
         stripped_archive_headline_url_list.append(a_stripped_url)
