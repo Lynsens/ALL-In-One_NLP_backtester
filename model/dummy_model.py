@@ -100,6 +100,7 @@ def calculate_company_sentiment_stats(task_dir, mentioned_article_sentiment_dict
 
     for a_company, a_company_info in company_market_sentiment_LUT.items():
         company_market_sentiment_LUT[a_company]['total_actionable_days'] = len(a_company_info['sentiment_indicator'].keys())
+        company_market_sentiment_LUT[a_company]['total_mentioned_times'] = sum([v['mentioned_time'] for v in a_company_info['mentioned_in'].values()])
 
     company_market_sentiment_LUT = sorted(company_market_sentiment_LUT.items(), key = lambda x: x[1]['total_actionable_days'], reverse = True)
 
