@@ -32,7 +32,7 @@ class client_finnhub:
     def fetch_MarketNews(self,symbol):
         re = requests.get(self.address+"")
 
-    def fetch_Candles(self,symbol,start,end,res="1"):
+    def fetch_Candles(self,symbol,start,end,res="D"):
         if isinstance(start,str):
             try:
                 start = int(dt.datetime.strptime(start,'%Y-%m-%d').timestamp())

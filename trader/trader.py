@@ -4,6 +4,7 @@ import threading
 import numpy as np
 import pandas as pd
 import backtesting as bt
+import json
 
 class dummystg_active(bt.Strategy):
     def init(self):
@@ -230,3 +231,7 @@ class trader():
         for stock in self.stock_dummyinst:
             self.results[stock] = self.stock_dummyinst[stock]._results
             self.result_plotters[stock] = self.stock_dummyinst[stock].plot
+
+    def trade_by_sigfile_json(self,filename):
+        trade_sig = json.load(open(filename,'r'))['Apple']['sentiment_indicator']
+        
