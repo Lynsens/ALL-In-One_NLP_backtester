@@ -249,3 +249,14 @@ The visualization of the trading signals will be like:
 ![SOURCE_dummy_model_demo](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/SOURCE_dummy_model_demo.png)
 
 which utilize the interactive nature of `backtesting.py`. That's about it regarding our dummy model, more about trading in the following section.
+
+## Future Plan
+
+All core promised features are delivered, so we don't have anything major to plan in general. But we do plan to allocate time to provide [some user manuals like this](https://github.com/choH/half_tael_DQN/blob/master/demo_and_manual/User%20Manual%20for%20trade_interface.py.md) as a toolbox is almost useless without proper instruction. We mentioned about this in [Progress Report 2](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/progress_report_2.md), but happened to end up not put in inside our management plan -- this does not do anything for the functionality of our project, but we recognize it is an important component to be user friendly.
+
+---
+
+## Updated Management Plan
+
+We don't have a detailed updated management plan as the project is submitted. As mentioned above, we do plan to add some user manuals and quick start examples to make it a useable tool to users who are entirely unfamiliar with our project.
+
