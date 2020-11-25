@@ -69,7 +69,7 @@ The basically, by running the three red comments, you will get a neatly pre-proc
 #### Folder Structure
 ![text_obtainer_folder_structure_update](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_folder_structure_update.png)
 
-Here's the updated version of our folder structure. The general framework is same as what we demoed in [Progress Report 2](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/progress_report_2.md), but with added `data_cleaner`, `dummy_model`, and couple more output under `text_obtainer_output/.../market_data/` folder.
+Here's the updated version of our folder structure. The general framework is same as what we demoed in [Progress Report 2](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/progress_report_2.md), but with added `data_cleaner`, `dummy_model`, and couple more output under `text_obtainer_output/.../market_data/` folder (we will touch on this through different section of this report).
 
 In `data_cleaner`, we implemented a bunch of utilities methods to collect company mentioned stats among all the obtained plain-text data and make both parties *"know (be able to trace back to) each other"* so that we may have a piece of plain-text data (in this case a WSJ article) like:
 
@@ -178,7 +178,7 @@ Note if you happen to want to register more features into this LUT, you may simp
 
 ---
 
-Again, all outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it (and also for copyright concerns). In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs* and *text_obtainer_output/market_data* accordingly.
+Again, all outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it (and also for copyright concerns). In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs/* and *text_obtainer_output/market_data/* accordingly.
 
 ### Regarding Dummy Model
 
@@ -192,7 +192,7 @@ For the general workflow of the entire project, we have described it couple time
 
 #### Dummy Model
 
-In this case, we have trained an offline `dummy_model` to demonstrate the capability of our project. The model itself is nothing fancy — in fact, it is quite rough — as it analyses each article's sentiment information against a `Loughran McDonald` dictionary, then it calculate an `trade_indicator` base on the stats on `positive, strongmodal, negative, constraining`, company mentioned times, and couple amplifier coefficient. The model will therefore produce a `trade_signal` of a company on a day base on this `trade_indictor`.
+In this case, we have trained an offline `dummy_model` to demonstrate the capability of our project. The model itself is nothing fancy — in fact, it is quite rough — as it analyses each article's sentiment information against a `Loughran McDonald` dictionary, then it calculate an `trade_indicator` base on the stats on `positive, strongmodal, negative, constraining` (this will generate a `mentioned_actiels_sentiment_analysis` file so that no re-assessment on the same article), company mentioned times, and couple amplifier coefficient. The model will therefore produce a `trade_signal` of a company on a day base on this `trade_indictor`.
 
 For demo, we will have something like:
 
@@ -242,7 +242,10 @@ But making the best model is not the intend of this project, our goal is to make
 $ python3 model/dummy_model.py
 ```
 
-as long as your model-specific util is implemented nicely under the `data_cleaner` module, it should run flawlessly as far as an offline model is concerned. For online learning, you will have to integrate your model with the `trader`, as your trading decision will be made on the fly and you need access to the stock market data, which is only visible under the `trader` module.
+as long as your model-specific util is implemented nicely under the `data_cleaner` module, it should run flawlessly as far as an offline model is concerned. A comprehensive output — with trading signals and sentiment analysis on top of the `company_market_LUT` — will output as `company_market_sentiment_LUT`. A minimumlistic version of this LUT, `clean_trade_signal_log` is also provided to feed to the following `trader` module.
+
+
+(For online learning, you will have to integrate your model with the `trader`, as your trading decision will be made on the fly and you need access to the stock market data, which is only visible under the `trader` module.)
 
 The visualization of the trading signals will be like:
 
