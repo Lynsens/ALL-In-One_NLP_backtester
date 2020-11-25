@@ -250,6 +250,16 @@ The visualization of the trading signals will be like:
 
 which utilize the interactive nature of `backtesting.py`. That's about it regarding our dummy model, more about trading in the following section.
 
+
+### Regarding Trading
+
+> Jiaqi please add your section here.
+
+### Regarding Visualization
+
+> Mocun please add your section here.
+---
+
 ## Future Plan
 
 All core promised features are delivered, so we don't have anything major to plan in general. But we do plan to allocate time to provide [some user manuals like this](https://github.com/choH/half_tael_DQN/blob/master/demo_and_manual/User%20Manual%20for%20trade_interface.py.md) as a toolbox is almost useless without proper instruction. We mentioned about this in [Progress Report 2](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/progress_report_2.md), but happened to end up not put in inside our management plan -- this does not do anything for the functionality of our project, but we recognize it is an important component to be user friendly.
@@ -260,3 +270,31 @@ All core promised features are delivered, so we don't have anything major to pla
 
 We don't have a detailed updated management plan as the project is submitted. As mentioned above, we do plan to add some user manuals and quick start examples to make it a useable tool to users who are entirely unfamiliar with our project.
 
+
+---
+## Contribution Acknowledgment
+
+
+* **Henry ZHONG**
+    * Developed WSJ scraper scripts (to support the alternative tag structure) with the help of Mocun. `code`
+    * Refactored WSJ scraper scripts. `code`
+    * Designed the folder structure of text obtainer. `design`
+    * Drafted **Regarding Text Input** section of *Progress Report 2* with Mocun. `report`
+    * Wrote **Background** section of *Progress Report 2*. It is mostly similar to what we have in *Progress Report 1* which involves Jiaqi's input. `report`
+    * Wrote **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*, however the it is just a reflection of our team discussion.  `report` `management`
+    * Registered and submitted abstract for SOURCE. `report`
+
+* **Jiaqi YU**
+    * Researched the implementations of necessary components of stock market trading. `design`
+    * Developed virtual trading platform. `code`
+    * Drafted **Regarding Trading** section of *Progress Report 2*. `report`
+    * Contributed to **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*. `report` `management`
+
+
+* **Mocun YE**
+    * Experimenting basic of of data visualizer. `code`
+    * Researched the design of data visualizer with respect to back testing platform. `design`
+    * Developed WSJ scraper script (focus on the alternative tag structure) with Henry. `code`
+    * Contributed to **Regarding Text Input** section of *Progress Report 2* with Henry. `report`
+    * Drafted **Regarding Visualization** section of *Progress Report 2*. `report`
+   * Contributed to **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*. `report` `management`
