@@ -26,3 +26,226 @@ We like to build a set of tools that may automate such process to a certain degr
 
 In our pervious proposal, we also researched couple related works regarding this task (mostly focusing on the fields of backtesting, obtaining stock market data, and obtaining plain text data). We analyzed the pros-and-cons of several existing public available libraries and described why are (or why aren't) we developing own our tools, and what functionalities were expected. Please do review our [*Proposal*](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/proposal.md) if you'd expect more information regarding related works.
 
+
+
+---
+
+## Progress Report
+
+Per our last report, between the submission time of Report 2 to this report is written, we should be working on:
+
+
+* Week of 11/09/2020:
+    * Refine development of text obtainer and virtual trading platform.
+    * Test and debug coupling between virtual trading platform and text obtainer.
+    * Develop visualizer.
+    * Finish development of dummy model.
+
+* Week of 11/16/2020:
+    * Finish coupling virtual trading platform with text obtainer and test coupling everything together.
+    * Develop visualizer.
+    * Paper writing.
+    * (Reduced workload due to Paper writing)
+
+* Week of 11/23/2020:
+    * Test and debug coupling everything together.
+    * Final report writing.
+    * Polishing our delivery.
+
+As a general overview, we were still working on visualization by the week of 11/23/2020 (the NLP/text-mining indicator visualization, not the trading signal visualization; which was done by 11/20/2020 and we have present to SOURCE), but we manage to delivery everything we promised.
+
+### Regarding Text Input
+
+#### Demo of Achievement
+It took some registrations (`WSJ` and `Scale SERP` for the start) to get the `text_obtainer` module running, and some of them cost money. So here's what the end result will be like when running with the `text_obtainer` (and train an off-line `dummy_model` based on the data collected by `text_obtainer`) we developed.
+
+![text_obtainer_demo_720p](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_end_result.jpeg)
+
+(please ignore the folder structure on LHS, the above visualization is part of our presentation at SOURCE where we demoed an older version of our project. The updated folder structure will be demoed in the following section.)
+
+The basically, by running the three red comments, you will get a neatly pre-processed text dataset with all basic market metadata available.
+
+
+#### Folder Structure
+![text_obtainer_folder_structure_update](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/text_obtainer_folder_structure_update.png)
+
+Here's the updated version of our folder structure. The general framework is same as what we demoed in [Progress Report 2](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/progress_report_2.md), but with added `data_cleaner`, `dummy_model`, and couple more output under `text_obtainer_output/.../market_data/` folder.
+
+In `data_cleaner`, we implemented a bunch of utilities methods to collect company mentioned stats among all the obtained plain-text data and make both parties *"know (be able to trace back to) each other"* so that we may have a piece of plain-text data (in this case a WSJ article) like:
+
+```
+{
+    "channel": "WSJ",
+    "date": "20120102",
+    "url": "https://www.wsj.com/articles/SB10001424052970203462304577136061852705298",
+    "author": "Barbara Kollmeyer",
+    "headline": "Europe Stocks Start 2012 Strong",
+    "quotes": [
+        "Bayer",
+        "BASF",
+        "Siemens",
+        "Allianz",
+        "Intesa Sanpaolo",
+        "Sunways",
+        "Vestas Wind Systems"
+    ],
+    "content": "MADRID\u2014A better-than-expected purchasing-managers index out of Germany lifted European stock markets on the first day of trading for the new year.\nThe Stoxx Europe 600 index rose 1.1% to 247.15, its highest close since Oct. 28. U.K. and U.S. markets were closed, making for thin trading conditions.\n The push was led by the German DAX 30 index, which jumped 3% to 6075.52, its best one-day gain since Dec. 20.
+    …
+as investors focused on claims it and other Norwegian insurers will face from a storm that swept over Sweden, Finland and Norway with hurricane-strength winds on Dec. 26 and Dec. 27.\nWrite to
+    ...,
+    "article_id": "8534f652-eb8c-47e7-9204-3f7cd43d7de2",
+    "mention": {
+        "Total": 1,
+        "Bayer": 1,
+        "BASF": 1,
+        "Siemens": 1,
+        "Allianz": 1,
+        "Intesa Sanpaolo": 1,
+        "Sunways": 1,
+        "Vestas Wind Systems": 1
+    }
+}
+```
+
+And a `company_market_LUT.json` like:
+
+
+```
+{
+    "Nomura Holdings": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/NMR",
+        "ticker": "NMR",
+        "exchange": "U.S.: NYSE",
+        "legal_full_name": "Nomura Holdings Inc. ADR",
+        "quoted_in": [
+            "36090421-d93b-4e9a-ab09-4b1846f07e4e",
+            "64514546-4a6d-4b8a-abb6-7c7aedc5e103",
+            "ca7d15df-fa74-4243-a8c7-24857e03fdcd",
+            "b4d87959-9a60-4ae5-9a22-3e314acbf788",
+            "515db405-f81e-4a31-891c-6d66289a5e07"
+        ],
+        "mentioned_in": {
+            "36090421-d93b-4e9a-ab09-4b1846f07e4e": {
+                "mentioned_time": 1,
+                "date": "20120207"
+            },
+            "64514546-4a6d-4b8a-abb6-7c7aedc5e103": {
+                "mentioned_time": 1,
+                "date": "20120125"
+            },
+            "a253f089-5608-4f00-8ecf-c3ebf21698a5": {
+                "mentioned_time": 1,
+                "date": "20120106"
+            },
+            "ca7d15df-fa74-4243-a8c7-24857e03fdcd": {
+                "mentioned_time": 1,
+                "date": "20120214"
+            },
+            "947e3c90-ea52-417d-ab64-40aedd729177": {
+                "mentioned_time": 2,
+                "date": "20120315"
+            },
+            "b4d87959-9a60-4ae5-9a22-3e314acbf788": {
+                "mentioned_time": 1,
+                "date": "20120116"
+            },
+            "aba4599e-26f0-4915-87bb-77f57903fe74": {
+                "mentioned_time": 1,
+                "date": "20120117"
+            },
+            "515db405-f81e-4a31-891c-6d66289a5e07": {
+                "mentioned_time": 1,
+                "date": "20120121"
+            }
+        }
+    },
+    ...
+}
+```
+
+which registered all article-company relationships into a look-up table. All of these can be done with a simple line of:
+
+```
+ALO_NLP_backtester $ python3 data_cleaner/main.py
+```
+
+
+
+Note if you happen to want to register more features into this LUT, you may simple implement your own utility, then:
+* add it to the `main.py` workflow and re-run the `data_cleaner`, or
+* deploy it as a separable script and trigger it manually, or
+* deploy it as an utility and integrate it as part of your model pre-process (this is what we did for our `dummy_model`, more on this later).
+
+---
+
+Again, all outputs will be stored in the *text_obtainer_output* folder. This folder is set to not sync with GitHub on purpose as there can be thousands of files under it (and also for copyright concerns). In short, you may find out the plain text data of smallest unit objects (in this case, it is an article) under the *text_obtainer_output/articles* folder. The log and metadata of the text are stored in *text_obtainer_output/logs* and *text_obtainer_output/market_data* accordingly.
+
+### Regarding Dummy Model
+
+#### General Workflow
+
+In our pervious [Progress Report 2](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/progress_report_2.md) we demoed the workflow of `text_obtainer` running on a WSJ task, and the implementation of these parts are unchanged.
+
+For the general workflow of the entire project, we have described it couple times in words, and here is a visualization of such workflow:
+
+![general_workflow](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/general_workflow.jpeg)
+
+#### Dummy Model
+
+In this case, we have trained an offline `dummy_model` to demonstrate the capability of our project. The model itself is nothing fancy — in fact, it is quite rough — as it analyses each article's sentiment information against a `Loughran McDonald` dictionary, then it calculate an `trade_indicator` base on the stats on `positive, strongmodal, negative, constraining`, company mentioned times, and couple amplifier coefficient. The model will therefore produce a `trade_signal` of a company on a day base on this `trade_indictor`.
+
+For demo, we will have something like:
+
+```
+{
+    "Apple": {
+        "market_data_url": "https://www.wsj.com/market-data/quotes/AAPL",
+        "ticker": "AAPL",
+        "exchange": "U.S.: Nasdaq",
+        "legal_full_name": "Apple Inc.",
+        "total_actionable_days": 69,
+        "total_mentioned_times": 633,
+        "sentiment_indicator": {
+            "20120104": {
+                "trade_indicator": [
+                    0.2558139534883721,
+                    [
+                        5.5,
+                        21.5
+                    ]
+                ],
+                "trade_signal": "sell"
+            },
+            "20120105": {
+                "trade_indicator": [
+                    0.564625850340136,
+                    [
+                        41.5,
+                        73.5
+                    ]
+                ],
+                "trade_signal": "sell"
+            },
+            ...            
+```
+(the format for `trade_indicator` is `"trade_indicator": [ resultant indicator, [positive indicator, negative indicator]]`
+
+There are obviously couple drawbacks on the model, as we may use Native Bayes but not dictionary to analysis sentiment, and we may use some NLP trick (or just throw in BERT) to know that which subject an adjective attributes to, so that the model won't be confused by text-input like:
+
+```
+Apple launched the M1 chip with success today which might be a bad news for x86 manufactures like Intel.
+```
+
+But making the best model is not the intend of this project, our goal is to make toolkit, which is fairly success as you get the above trade signal log by a line of:
+
+```
+$ python3 model/dummy_model.py
+```
+
+as long as your model-specific util is implemented nicely under the `data_cleaner` module, it should run flawlessly as far as an offline model is concerned. For online learning, you will have to integrate your model with the `trader`, as your trading decision will be made on the fly and you need access to the stock market data, which is only visible under the `trader` module.
+
+The visualization of the trading signals will be like:
+
+![SOURCE_dummy_model_demo](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/SOURCE_dummy_model_demo.png)
+
+which utilize the interactive nature of `backtesting.py`. That's about it regarding our dummy model, more about trading in the following section.
