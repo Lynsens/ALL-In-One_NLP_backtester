@@ -276,25 +276,28 @@ We don't have a detailed updated management plan as the project is submitted. As
 
 
 * **Henry ZHONG**
-    * Developed WSJ scraper scripts (to support the alternative tag structure) with the help of Mocun. `code`
-    * Refactored WSJ scraper scripts. `code`
-    * Designed the folder structure of text obtainer. `design`
-    * Drafted **Regarding Text Input** section of *Progress Report 2* with Mocun. `report`
-    * Wrote **Background** section of *Progress Report 2*. It is mostly similar to what we have in *Progress Report 1* which involves Jiaqi's input. `report`
-    * Wrote **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*, however the it is just a reflection of our team discussion.  `report` `management`
-    * Registered and submitted abstract for SOURCE. `report`
+    * Developed `data_cleaner`. `code`
+    * Developed `dummy_model`. `code` `design`
+    * Drafted SOURCE presentation slide and organized the recording. `report` `management`
+    * Drafted **Regarding Text Input** section of *Final Report* with Mocun. `report`
+    * Wrote **Regarding Dummy Model** section of *Final Report*. `report`
+    * Wrote **Background** section of *Final Report*. It is mostly similar to what we have in *Progress Report 2* which involves Jiaqi's input. `report`
+    * Finalized the pipeline of three modules, but it take contributions of the whole team. `design`
+    * Wrote (almost trivial) **Future Plan** and **Updated Management Plan** sections of *Final Report*, however the it is just a reflection of our team discussion.  `report` `management`
+
 
 * **Jiaqi YU**
-    * Researched the implementations of necessary components of stock market trading. `design`
-    * Developed virtual trading platform. `code`
-    * Drafted **Regarding Trading** section of *Progress Report 2*. `report`
-    * Contributed to **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*. `report` `management`
+    * Developed virtual trading platform. `code` `design`
+    * Contributed to SOURCE presentation slide. `report`
+    * Wrote **Regarding Trading** section of *Final Report*. `report`
+    * Contributed to the pipeline design of three modules. `design`
+    * Contributed to the (almost trivial) **Future Plan** and **Updated Management Plan** sections of *Final Report*. `report` `management`
 
 
 * **Mocun YE**
-    * Experimenting basic of of data visualizer. `code`
-    * Researched the design of data visualizer with respect to back testing platform. `design`
-    * Developed WSJ scraper script (focus on the alternative tag structure) with Henry. `code`
-    * Contributed to **Regarding Text Input** section of *Progress Report 2* with Henry. `report`
-    * Drafted **Regarding Visualization** section of *Progress Report 2*. `report`
-   * Contributed to **Future Plan** and **Updated Management Plan** sections of *Progress Report 2*. `report` `management`
+    * Developed visualizer. `code` `design`
+    * Contributed to SOURCE presentation plus did editing work. `report` `management`
+    * Contributed to the **Regarding Text Input** section of *Final Report*. `report`
+    * Wrote **Regarding Visualization** section of *Final Report*. `report`
+    * Contributed to the pipeline design of three modules. `design`
+    * Contributed to the (almost trivial) **Future Plan** and **Updated Management Plan** sections of *Final Report*. `report` `management`
