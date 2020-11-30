@@ -260,7 +260,13 @@ which utilize the interactive nature of `backtesting.py`. That's about it regard
 
 ### Regarding Visualization
 
-> Mocun please add your section here.
+(https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/visualization.gif)
+
+There are two goals of visualization. First, explaining graphically why the Backtester made that decision. Second, the possible profit/loss profile with the decisions made by the Backtester in a real market environment. 
+
+The visualization of the market simulation is partially developed based on the original built-in visualization within the `Backtester` package. However, it only records the buys and sells, which won't tell much about the reason behind why the model made the trading decision. We implemented three new columns to represent the value of the indicator, the "low" value, and the "high" value. The trading model only made either buying or selling decisions based on the value of the indicator, which is calculated from both "low" and "high" values. 
+
+All the data are aligned by time series. A user can easily track the data on a certain day with a mouse and then examine the accuracy and efficiency of the trading decisions the trading model made.
 ---
 
 ## Future Plan
