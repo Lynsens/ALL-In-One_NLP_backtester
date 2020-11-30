@@ -182,7 +182,7 @@ def plot(*, results: pd.Series,
 
     # Limit data to max_candles
     if is_datetime_index:
-        df, indicators, equity_data, trades = _maybe_resample_data(
+        df, indicatvolumeors, equity_data, trades = _maybe_resample_data(
             resample, df, indicators, equity_data, trades)
 
     df.index.name = None  # Provides source name @index
@@ -208,6 +208,11 @@ def plot(*, results: pd.Series,
                         bounds=(index[0] - pad,
                                 index[-1] + pad)) if index.size > 1 else None)
     figs_above_ohlc, figs_below_ohlc = [], []
+
+
+    indi = results['_equity_curve']['trade_indicator'].copy(deep=False)
+    indi = ColumnDataSource(df)
+    indi.add((df.Close >= df.Open).values.astype(np.uint8).astype(str), 'inc')
 
     source = ColumnDataSource(df)
     source.add((df.Close >= df.Open).values.astype(np.uint8).astype(str), 'inc')
@@ -365,6 +370,253 @@ return this.labels[index] || "";
 
         figs_above_ohlc.append(fig)
 
+
+    def _plot_indicator_section(is_return=False):
+
+
+        # indi = results['_equity_curve']['trade_indicator'].copy(deep=False)
+        # yaxis_label =  'Indicator'
+        # source_key =  'indicator'
+        # source.add(indi, source_key)
+        # fig = new_indicator_figure(
+        #     y_axis_label=yaxis_label,
+        #     **({} if plot_drawdown else dict(plot_height=110)))
+        # r = fig.line('index', source_key, source=source, line_width=1.5, line_alpha=1)
+        # if relative_equity:
+        #     tooltip_format = f'@{source_key}{{+0,0.[000]%}}'
+        #     tick_format = '0,0.[00]%'
+        #     legend_format = '{:,.0f}%'
+        # else:
+        #     tooltip_format = f'@{source_key}{{$ 0,0}}'
+        #     tick_format = '$ 0.0 a'
+        #     legend_format = '${:,.0f}'
+        # set_tooltips(fig, [(yaxis_label, tooltip_format)], renderers=[r])
+        # fig.yaxis.formatter = NumeralTickFormatter(format=tick_format)
+
+        # figs_above_ohlc.append(fig)
+        equity = equity_data['trade_indicator'].copy()
+        dd_end = equity_data['DrawdownDuration'].idxmax()
+        if np.isnan(dd_end):
+            dd_start = dd_end = equity.index[0]
+        else:
+            dd_start = equity[:dd_end].idxmax()
+            # If DD not extending into the future, get exact point of intersection with equity
+            if dd_end != equity.index[-1]:
+                dd_end = np.interp(equity[dd_start],
+                                   (equity[dd_end - 1], equity[dd_end]),
+                                   (dd_end - 1, dd_end))
+
+        # if smooth_equity:
+        #     interest_points = pd.Index([
+        #         # Beginning and end
+        #         equity.index[0], equity.index[-1],
+        #         # Peak equity and peak DD
+        #         equity.idxmax(), equity_data['DrawdownPct'].idxmax(),
+        #         # Include max dd end points. Otherwise the MaxDD line looks amiss.
+        #         dd_start, int(dd_end), min(int(dd_end + 1), equity.size - 1),
+        #     ])
+        #     select = pd.Index(trades['ExitBar']) | interest_points
+        #     select = select.unique().dropna()
+        #     equity = equity.iloc[select].reindex(equity.index)
+        #     equity.interpolate(inplace=True)
+
+        assert equity.index.equals(equity_data.index)
+
+        # if relative_equity:
+        #     equity /= equity.iloc[0]
+        # if is_return:
+        #     equity -= equity.iloc[0]
+
+        yaxis_label = 'Return' if is_return else 'Indicator'
+        source_key = 'eq_return' if is_return else 'indicator'
+        source.add(equity, source_key)
+        fig = new_indicator_figure(
+            y_axis_label=yaxis_label,
+            **({} if plot_drawdown else dict(plot_height=110)))
+
+
+        # Equity line
+        r = fig.line('index', source_key, source=source, line_width=1.5, line_alpha=1, line_color ='black')
+        if relative_equity:
+            tooltip_format = f'@{source_key}'
+            tick_format = '0,0'
+            legend_format = '{:,.0f}'
+        else:
+            tooltip_format = f'@{source_key}'
+            tick_format = '$ 0.0 a'
+            legend_format = '${:,.0f}'
+        set_tooltips(fig, [(yaxis_label, tooltip_format)], renderers=[r])
+        fig.yaxis.formatter = NumeralTickFormatter(format=tick_format)
+
+
+        figs_above_ohlc.append(fig)
+
+
+    def _plot_high_section(is_return=False):
+
+
+        # indi = results['_equity_curve']['trade_indicator'].copy(deep=False)
+        # yaxis_label =  'Indicator'
+        # source_key =  'indicator'
+        # source.add(indi, source_key)
+        # fig = new_indicator_figure(
+        #     y_axis_label=yaxis_label,
+        #     **({} if plot_drawdown else dict(plot_height=110)))
+        # r = fig.line('index', source_key, source=source, line_width=1.5, line_alpha=1)
+        # if relative_equity:
+        #     tooltip_format = f'@{source_key}{{+0,0.[000]%}}'
+        #     tick_format = '0,0.[00]%'
+        #     legend_format = '{:,.0f}%'
+        # else:
+        #     tooltip_format = f'@{source_key}{{$ 0,0}}'
+        #     tick_format = '$ 0.0 a'
+        #     legend_format = '${:,.0f}'
+        # set_tooltips(fig, [(yaxis_label, tooltip_format)], renderers=[r])
+        # fig.yaxis.formatter = NumeralTickFormatter(format=tick_format)
+
+        # figs_above_ohlc.append(fig)
+        equity = equity_data['high'].copy()
+        dd_end = equity_data['DrawdownDuration'].idxmax()
+        if np.isnan(dd_end):
+            dd_start = dd_end = equity.index[0]
+        else:
+            dd_start = equity[:dd_end].idxmax()
+            # If DD not extending into the future, get exact point of intersection with equity
+            if dd_end != equity.index[-1]:
+                dd_end = np.interp(equity[dd_start],
+                                   (equity[dd_end - 1], equity[dd_end]),
+                                   (dd_end - 1, dd_end))
+
+        # if smooth_equity:
+        #     interest_points = pd.Index([
+        #         # Beginning and end
+        #         equity.index[0], equity.index[-1],
+        #         # Peak equity and peak DD
+        #         equity.idxmax(), equity_data['DrawdownPct'].idxmax(),
+        #         # Include max dd end points. Otherwise the MaxDD line looks amiss.
+        #         dd_start, int(dd_end), min(int(dd_end + 1), equity.size - 1),
+        #     ])
+        #     select = pd.Index(trades['ExitBar']) | interest_points
+        #     select = select.unique().dropna()
+        #     equity = equity.iloc[select].reindex(equity.index)
+        #     equity.interpolate(inplace=True)
+
+        assert equity.index.equals(equity_data.index)
+
+        # if relative_equity:
+        #     equity /= equity.iloc[0]
+        # if is_return:
+        #     equity -= equity.iloc[0]
+
+        yaxis_label = 'Return' if is_return else 'High'
+        source_key = 'eq_return' if is_return else 'high'
+        source.add(equity, source_key)
+        fig = new_indicator_figure(
+            y_axis_label=yaxis_label,
+            **({} if plot_drawdown else dict(plot_height=110)))
+
+
+        # Equity line
+        r = fig.line('index', source_key, source=source, line_width=1.5, line_alpha=1, line_color = 'orange')
+        if relative_equity:
+            tooltip_format = f'@{source_key}'
+            tick_format = '0,0'
+            legend_format = '{:,.0f}'
+        else:
+            tooltip_format = f'@{source_key}'
+            tick_format = '$ 0.0 a'
+            legend_format = '${:,.0f}'
+        set_tooltips(fig, [(yaxis_label, tooltip_format)], renderers=[r])
+        fig.yaxis.formatter = NumeralTickFormatter(format=tick_format)
+
+
+        figs_above_ohlc.append(fig)
+
+
+
+    def _plot_low_section(is_return=False):
+
+
+        # indi = results['_equity_curve']['trade_indicator'].copy(deep=False)
+        # yaxis_label =  'Indicator'
+        # source_key =  'indicator'
+        # source.add(indi, source_key)
+        # fig = new_indicator_figure(
+        #     y_axis_label=yaxis_label,
+        #     **({} if plot_drawdown else dict(plot_height=110)))
+        # r = fig.line('index', source_key, source=source, line_width=1.5, line_alpha=1)
+        # if relative_equity:
+        #     tooltip_format = f'@{source_key}{{+0,0.[000]%}}'
+        #     tick_format = '0,0.[00]%'
+        #     legend_format = '{:,.0f}%'
+        # else:
+        #     tooltip_format = f'@{source_key}{{$ 0,0}}'
+        #     tick_format = '$ 0.0 a'
+        #     legend_format = '${:,.0f}'
+        # set_tooltips(fig, [(yaxis_label, tooltip_format)], renderers=[r])
+        # fig.yaxis.formatter = NumeralTickFormatter(format=tick_format)
+
+        # figs_above_ohlc.append(fig)
+        equity = equity_data['low'].copy()
+        dd_end = equity_data['DrawdownDuration'].idxmax()
+        if np.isnan(dd_end):
+            dd_start = dd_end = equity.index[0]
+        else:
+            dd_start = equity[:dd_end].idxmax()
+            # If DD not extending into the future, get exact point of intersection with equity
+            if dd_end != equity.index[-1]:
+                dd_end = np.interp(equity[dd_start],
+                                   (equity[dd_end - 1], equity[dd_end]),
+                                   (dd_end - 1, dd_end))
+
+        # if smooth_equity:
+        #     interest_points = pd.Index([
+        #         # Beginning and end
+        #         equity.index[0], equity.index[-1],
+        #         # Peak equity and peak DD
+        #         equity.idxmax(), equity_data['DrawdownPct'].idxmax(),
+        #         # Include max dd end points. Otherwise the MaxDD line looks amiss.
+        #         dd_start, int(dd_end), min(int(dd_end + 1), equity.size - 1),
+        #     ])
+        #     select = pd.Index(trades['ExitBar']) | interest_points
+        #     select = select.unique().dropna()
+        #     equity = equity.iloc[select].reindex(equity.index)
+        #     equity.interpolate(inplace=True)
+
+        assert equity.index.equals(equity_data.index)
+
+        # if relative_equity:
+        #     equity /= equity.iloc[0]
+        # if is_return:
+        #     equity -= equity.iloc[0]
+
+        yaxis_label = 'Return' if is_return else 'Low'
+        source_key = 'eq_return' if is_return else 'low'
+        source.add(equity, source_key)
+        fig = new_indicator_figure(
+            y_axis_label=yaxis_label,
+            **({} if plot_drawdown else dict(plot_height=110)))
+
+
+        # Equity line
+        r = fig.line('index', source_key, source=source, line_width=1.5, line_alpha=1, line_color = "firebrick")
+        if relative_equity:
+            tooltip_format = f'@{source_key}'
+            tick_format = '0,0'
+            legend_format = '{:,.0f}'
+        else:
+            tooltip_format = f'@{source_key}'
+            tick_format = '$ 0.0 a'
+            legend_format = '${:,.0f}'
+        set_tooltips(fig, [(yaxis_label, tooltip_format)], renderers=[r])
+        fig.yaxis.formatter = NumeralTickFormatter(format=tick_format)
+
+
+        figs_above_ohlc.append(fig)
+
+
+
+
     def _plot_drawdown_section():
         """Drawdown section"""
         fig = new_indicator_figure(y_axis_label="Drawdown")
@@ -413,7 +665,7 @@ return this.labels[index] || "";
         fig.xaxis.formatter = fig_ohlc.xaxis[0].formatter
         fig.xaxis.visible = True
         fig_ohlc.xaxis.visible = False  # Show only Volume's xaxis
-        r = fig.vbar('index', BAR_WIDTH, 'Volume', source=source, color=inc_cmap)
+        r = fig.vbar('index', BAR_WIDTH, 'Volume', source=indi, color=inc_cmap)
         set_tooltips(fig, [('Volume', '@Volume{0.00 a}')], renderers=[r])
         fig.yaxis.formatter = NumeralTickFormatter(format="0 a")
         return fig
@@ -573,6 +825,9 @@ return this.labels[index] || "";
 
     if plot_equity:
         _plot_equity_section()
+        _plot_indicator_section()
+        _plot_low_section()
+        _plot_high_section()
 
     if plot_return:
         _plot_equity_section(is_return=True)
