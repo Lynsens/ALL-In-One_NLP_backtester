@@ -260,7 +260,7 @@ which utilize the interactive nature of `backtesting.py`. That's about it regard
 
 ### Regarding Visualization
 
-[visualization](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/visualization.gif)
+![visualization](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/visualization.gif)
 
 There are two goals of visualization. First, explaining graphically why the Backtester made that decision. Second, the possible profit/loss profile with the decisions made by the Backtester in a real market environment. 
 
