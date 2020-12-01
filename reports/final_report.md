@@ -256,7 +256,35 @@ which utilize the interactive nature of `backtesting.py`. That's about it regard
 
 ### Regarding Trading
 
-> Jiaqi please add your section here.
+For the trading part, our focus of development has actually transitioned from our origin proposal, where we listed a full sheet of features we would like to implement, to optimizing the workflow. There are two reasons that led to this change. The first is that we have basically finished all the purposed functions. For further details of the implemented functions, please refer to the previous reports. The second reason is that as the development of the model framework proceed, we discovered the new downside of the existing backtesting platform which we would like to improve.
+
+Almost all of the existing backtesting platform, including the one we used as the base, work in the way which the platform drives the iterations. (See the workflow graph below).
+
+![deprecated_workflow](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/deprecated_workflow.png)
+
+In this workflow, the model designer creates a function to be called by the backtesting platform, and then initialize an instance of the backtester. The backtester would take over the control flow and emulate the trading itself, calling the model function on each iteration for transaction signals.
+
+This is the easy way for the programmer of the platform, since it is more intuitive to code something that control the whole process instead of a set of api that to be called passively. At the same time, in case of which the trading strategy depends on the real-time stock data alone, this mechanism would work fine, since the model only need to work on the stock data of each iteration when being called.
+
+However, this mechanism would cause troubles when the trading model involves a different timeframe than the trading emulation, or when the trading model involves data other than the stock prices, which is most of the cases. In this situation, the trading model would actually like to take control of the iteration so as to signal the transaction more easily based on the decision it makes according to the external data that could be of random timeframes. However, it does raise some challenges for the backtesting platform designer, as it would be hard to code a set of API that maintains an emulation state.
+
+We thus designed a new workflow for the backtesting process as below.
+
+![new_workflow](https://github.com/choH/ALO_NLP_backtester/blob/master/reports/pic/new_workflow.png)
+
+Instead of letting the backtester to take over everything, we allow the model to control the whole iteration process, while perform the transactions through the simple API provided by the platform. In this way, the model could easily control on which iteration would the transaction happen.
+
+This workflow requires the backtesting platform to work as a finite state machine, which is controlled via the initialization call, the finalizing call, and the transaction calls. To implemented this, we modified from the original code we had and the backtesting platform we reused, and created a dummy model which works as a middle ware between the deprecated workflow and the improved one. The dummy model makes use of threads and mutex locks to hang up the backtesting platform and waits for the transaction or iteration calls from the actual trading model.
+
+From the dummy model, we added the following functions so as to allow the actual model to take control of the iteration.
+
+| Function | Parameters | Description | 
+|--------|------|-------|
+|`.trade_init()`| initial_balance: integer, initial_holdings: dictionary | Initialize the transaction emulation. Run the backtesting with the dummy model and put it into the state of listening for transactions. |
+|`.trade_next()`| target_time: integer | Go to the next iteration that is after the target timestamp. By default, it proceeds to the next iteration. |
+|`.trade_finish()`| None | Go to the end of the iteration and produce the result statistics and visualizations. |
+|`.trade_buy()`| symbol: string, target: integer | Buy the stock of the specified symbol at the target price. |
+|`.trade_sell()`| symbol: string, target: integer | Sell the stock of the specified symbol at the target price. |
 
 ### Regarding Visualization
 
@@ -312,3 +340,9 @@ We don't have a detailed updated management plan as the project is submitted. As
     * Wrote **Regarding Visualization** section of *Final Report*. `report`
     * Contributed to the pipeline design of three modules. `design`
     * Contributed to the (almost trivial) **Future Plan** and **Updated Management Plan** sections of *Final Report*. `report` `management`
+
+
+## Used Work/Code
+
+[backtesting.py](https://github.com/kernc/backtesting.py/)
+We reused part of this backtesting platform for part of the trading statics and part of the visualization. The emulation functions are modified to work with our implementation.
